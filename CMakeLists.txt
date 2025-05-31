@@ -16,15 +16,17 @@ set (source
   src/Domain/Source/Batch.cpp
   src/Domain/Source/OrderlLine.cpp
   src/Adapters/Database/Source/DbTables.cpp
-  src/Adapters/Repository/Source/SqlLiteRepository.cpp
+  src/Adapters/Repository/Source/SqlRepository.cpp
   src/Adapters/Repository/Source/FakeRepository.cpp
   src/Adapters/Database/Source/Mappers/OrderLineMapper.cpp
   src/Adapters/Database/Source/Mappers/BatchMapper.cpp
+  src/Services/Source/Services.cpp
   Tests/Utilities/CommonFunctions.cpp
-  Tests/TestAllocate.cpp
-  Tests/TestBatches.cpp
-  Tests/TestDataMappers.cpp
-  Tests/TestRepository.cpp
+  Tests/Unit/TestAllocate.cpp
+  Tests/Unit/TestBatches.cpp
+  Tests/Unit/TestServices.cpp
+  Tests/Integration/TestDataMappers.cpp
+  Tests/Integration/TestRepository.cpp
 )
 
 add_executable(Tests ${source})
@@ -33,6 +35,7 @@ target_include_directories(Tests PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/src
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Utilities
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Domain/Include
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/Services/Include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Adapters/Database/Include
   ${CMAKE_CURRENT_SOURCE_DIR}/src/Adapters/Repository/Include
   ${CMAKE_CURRENT_SOURCE_DIR}/Tests/Utilities)
