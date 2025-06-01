@@ -1,5 +1,5 @@
 #include "Services.h"
-#include "ModelLayer.h"
+#include "Model.h"
 #include "InvalidSku.h"
 #include "Domain/Include/Ports/IRepository.h"
 
@@ -22,10 +22,11 @@ namespace Allocation::Services
         session.begin();
         auto batches = repo->List();
         if (!IsValidSku(line.GetSKU(), batches))
-            throw InvalidSku(std::format("Invalid article {}", line.GetSKU()));
+            throw InvalidSku(std::format("Invalid sku {}", line.GetSKU()));
 
-        auto batchref = Domain::Allocate(line, batches.begin(), batches.end());
+        auto batch = Domain::Allocate(line, batches.begin(), batches.end());
+        repo->Add(batch);
         session.commit();
-        return batchref;
+        return batch.GetReference();
     }
 }

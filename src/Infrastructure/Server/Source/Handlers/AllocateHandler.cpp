@@ -27,21 +27,21 @@ namespace Allocation::Infrastructure::Server
             auto repo = std::make_shared<Adapters::Repository::SqlRepository>(session);
 
             Domain::OrderLine line(orderid, sku, qty);
-            std::string batchref = Services::Allocate(line, repo, session);
+            std::string batchRef = Services::Allocate(line, repo, session);
 
             response.setStatus(Poco::Net::HTTPResponse::HTTP_CREATED);
             response.setContentType("application/json");
             std::ostream& ostr = response.send();
-            ostr << "{\"batchref\": \"" << batchref << "\"}";
+            ostr << "{\"batchref\": \"" << batchRef << "\"}";
         }
         catch (const std::exception& ex)
         {
-            auto& app = Poco::Util::Application::instance();
-            app.logger().information("Error Error");
+            Poco::Util::Application::instance().logger().information("Error Error");
             response.setStatus(Poco::Net::HTTPResponse::HTTP_BAD_REQUEST);
             response.setContentType("application/json");
             std::ostream& ostr = response.send();
-            ostr << "{\"message\": \"" << ex.what() << "\"}";
+            std::string msg = ex.what();
+            ostr << "{\"message\": \"" << msg << "\"}";
         }
     }
 }

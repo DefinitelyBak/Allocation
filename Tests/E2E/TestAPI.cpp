@@ -1,6 +1,8 @@
 #include "Forwards.h"
 #include "Precompile.h"
 #include "CommonFunctions.h"
+#include "Infrastructure/Server/Include/Server.h"
+#include "Adapters/Database/Include/DbTables.h"
 
 #include <gtest/gtest.h>
 
@@ -11,23 +13,21 @@ namespace Allocation::Tests
     using namespace Poco::Net;
     using namespace Poco::JSON;
 
-    // основное API
-    std::string api_url()
-    {
-        return "http://localhost:8080";
-    }
-
     TEST(ApiTests, HappyPathReturns201AndAllocatedBatch)
     {
         std::string sku = RandomSku();
-        std::string othersku = RandomSku("other");
-        std::string earlybatch = RandomBatchRef("1");
-        std::string laterbatch = RandomBatchRef("2");
-        std::string otherbatch = RandomBatchRef("3");
+        std::string otherSku = RandomSku("other");
+        std::string earlyBatch = RandomBatchRef("1");
+        std::string laterBatch = RandomBatchRef("2");
+        std::string otherBatch = RandomBatchRef("3");
 
-        // Подразумевается, что у тебя есть функция add_stock в C++ или подготовка состояния БД
+        Poco::Data::SQLite::Connector::registerConnector();
+        Poco::Data::Session DBsession("SQLite", "TestBd");
+        Adapters::Database::InitDatabase(DBsession);
+        InsertBatch(DBsession, earlyBatch, sku, 3);
+        InsertBatch(DBsession, laterBatch, sku, 3);
+        InsertBatch(DBsession, otherBatch);
 
-        // Формируем JSON для POST /allocate
         Object::Ptr obj = new Object;
         obj->set("orderid", RandomOrderId());
         obj->set("sku", sku);
@@ -36,7 +36,7 @@ namespace Allocation::Tests
         std::stringstream body;
         obj->stringify(body);
 
-        URI uri(api_url() + "/allocate");
+        URI uri("http://127.0.0.1:9999/allocate");
         HTTPClientSession session(uri.getHost(), uri.getPort());
         HTTPRequest request(HTTPRequest::HTTP_POST, uri.getPath(), HTTPMessage::HTTP_1_1);
         request.setContentType("application/json");
@@ -51,14 +51,21 @@ namespace Allocation::Tests
         std::stringstream result;
         StreamCopier::copyStream(rs, result);
 
-        EXPECT_EQ(response.getStatus(), HTTPResponse::HTTP_CREATED);
+        auto status = response.getStatus(); 
+        EXPECT_EQ(status, HTTPResponse::HTTP_CREATED);
 
         Parser parser;
         Poco::Dynamic::Var parsed = parser.parse(result);
         Object::Ptr json = parsed.extract<Object::Ptr>();
-        std::string batchref = json->getValue<std::string>("batchref");
+        std::string batchRef = json->getValue<std::string>("batchref");
 
-        EXPECT_EQ(batchref, earlybatch);
+        EXPECT_EQ(batchRef, earlyBatch);
+
+        DBsession << "DELETE FROM batches WHERE reference IN (?, ?, ?)",
+            Poco::Data::Keywords::use(earlyBatch),
+            Poco::Data::Keywords::use(laterBatch),
+            Poco::Data::Keywords::use(otherBatch),
+            Poco::Data::Keywords::now;
     }
 
     TEST(ApiTests, UnhappyPathReturns400AndErrorMessage)
@@ -74,7 +81,7 @@ namespace Allocation::Tests
         std::stringstream body;
         obj->stringify(body);
 
-        URI uri(api_url() + "/allocate");
+        URI uri("http://127.0.0.1:9999/allocate");
         HTTPClientSession session(uri.getHost(), uri.getPort());
         HTTPRequest request(HTTPRequest::HTTP_POST, uri.getPath(), HTTPMessage::HTTP_1_1);
         request.setContentType("application/json");

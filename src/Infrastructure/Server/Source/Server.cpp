@@ -2,14 +2,19 @@
 
 #include "HandlerFactory.h"
 #include "Adapters/Database/Include/Session/SessionPool.h"
+#include "Adapters/Database/Include/DbTables.h"
 
 
 namespace Allocation::Infrastructure::Server
 {
     int ServerApp::main(const std::vector<std::string>&)
     {
-        Adapters::Database::SessionPool::Instance().Configure("SQLite", ":memory:");
-        Poco::UInt16 port = 8080;
+        Poco::Data::SQLite::Connector::registerConnector();
+        Adapters::Database::SessionPool::Instance().Configure("SQLite", "TestBd");
+        auto session = Adapters::Database::SessionPool::Instance().GetSession();
+        Adapters::Database::InitDatabase(session);
+
+        Poco::UInt16 port = 9999;
         Poco::Net::HTTPServerParams* pParams = new Poco::Net::HTTPServerParams;
         pParams->setMaxQueued(100);
         pParams->setMaxThreads(16);

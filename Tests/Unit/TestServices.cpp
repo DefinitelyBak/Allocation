@@ -36,7 +36,7 @@ namespace Allocation::Tests
         EXPECT_TRUE(
         ThrowsWithMessage<Services::InvalidSku>(
             [&]() {Services::Allocate(line, repo, session);},
-            "Invalid article NONEXISTENTSKU")
+            "Invalid sku NONEXISTENTSKU")
         );
     }
 
