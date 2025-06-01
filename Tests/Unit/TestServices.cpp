@@ -5,7 +5,7 @@
 #include "Services.h"
 #include "InvalidSku.h"
 #include "Adapters/Repository/Include/FakeRepository.h"
-#include "Adapters/Database/Include/Session/FakeSession.h"
+#include "Adapters/Database/Include/Session/FakeSessionImpl.h"
 
 
 namespace Allocation::Tests
@@ -18,7 +18,7 @@ namespace Allocation::Tests
         
         IRepositoryPtr repo = std::make_shared<Adapters::Repository::FakeRepository>(
             std::vector<Domain::Batch>{ batch });
-        Database::ISessionPtr session = std::make_shared<Adapters::Database::FakeSession>();
+        Poco::Data::Session session(new Adapters::Database::FakeSessionImpl());
 
         auto result = Services::Allocate(line, repo, session);
         EXPECT_EQ(result, "b1");
@@ -31,21 +31,26 @@ namespace Allocation::Tests
 
         auto repo = std::make_shared<Adapters::Repository::FakeRepository>(
             std::vector<Domain::Batch>{ batch });
-        auto session = std::make_shared<Adapters::Database::FakeSession>();
+        Poco::Data::Session session(new Adapters::Database::FakeSessionImpl());
 
-        try
-        {
-            Services::Allocate(line, repo, session);
-            FAIL() << "Ожидалось исключение InvalidSku";
-        }
-        catch (const Services::InvalidSku& ex)
-        {
-            EXPECT_TRUE(std::string(ex.what()).find(
-                "Недопустимый артикул NONEXISTENTSKU") != std::string::npos);
-        }
-        catch (...)
-        {
-            FAIL() << "Было выброшено неожиданное исключение";
-        }
-    }    
+        EXPECT_TRUE(
+        ThrowsWithMessage<Services::InvalidSku>(
+            [&]() {Services::Allocate(line, repo, session);},
+            "Invalid article NONEXISTENTSKU")
+        );
+    }
+
+    TEST(Services, test_commits)
+    {
+        Domain::OrderLine line("o1", "OMINOUS-MIRROR", 10);
+        Domain::Batch batch("b1", "OMINOUS-MIRROR", 100);
+        auto repo = std::make_shared<Adapters::Repository::FakeRepository>(
+            std::vector<Domain::Batch>{ batch });
+        Poco::Data::Session session(new Adapters::Database::FakeSessionImpl());
+
+        Services::Allocate(line, repo, session);
+
+        EXPECT_FALSE(session.isTransaction());
+    }
+
 }

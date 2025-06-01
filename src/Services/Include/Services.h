@@ -10,5 +10,5 @@ namespace Allocation::Services
     std::string Allocate(
         const Domain::OrderLine& line,
         IRepositoryPtr repo,
-        Database::ISessionPtr session);
+        Poco::Data::Session& session);
 }

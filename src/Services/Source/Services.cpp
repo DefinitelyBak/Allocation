@@ -2,7 +2,6 @@
 #include "ModelLayer.h"
 #include "InvalidSku.h"
 #include "Domain/Include/Ports/IRepository.h"
-#include "Adapters/Database/Include/Session/ISession.h"
 
 
 namespace Allocation::Services
@@ -18,14 +17,15 @@ namespace Allocation::Services
     std::string Allocate(
         const Domain::OrderLine& line,
         IRepositoryPtr repo,
-        Database::ISessionPtr session)
+        Poco::Data::Session& session)
     {
+        session.begin();
         auto batches = repo->List();
         if (!IsValidSku(line.GetSKU(), batches))
-            throw InvalidSku(std::format("Недопустимый артикул {}", line.GetSKU()));
+            throw InvalidSku(std::format("Invalid article {}", line.GetSKU()));
 
         auto batchref = Domain::Allocate(line, batches.begin(), batches.end());
-        session->commit();
+        session.commit();
         return batchref;
     }
 }

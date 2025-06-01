@@ -69,7 +69,7 @@ namespace Allocation::Tests
         );
 
         EXPECT_TRUE(
-        ThrowsWithMessage(
+        ThrowsWithMessage<OutOfStock>(
             [&]() { Allocate(OrderLine("order1", "SMALL-FORK", 10), batches.begin(), batches.end());},
             "The article SMALL-FORK is out of stock")
         );
