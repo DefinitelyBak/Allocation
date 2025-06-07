@@ -16,8 +16,8 @@ set(allocation_sources
   src/main.cpp
   src/Precompile.cpp
   src/Utilities/Common.cpp
-  src/Domain/Batch.cpp
-  src/Domain/OrderlLine.cpp
+  src/Domain/Product/Batch.cpp
+  src/Domain/Product/Product.cpp
   src/Adapters/Database/DbTables.cpp
   src/Adapters/Repository/SqlRepository.cpp
   src/Adapters/Repository/FakeRepository.cpp
@@ -60,8 +60,8 @@ enable_testing()
 set(test_sources
   src/Precompile.cpp
   src/Utilities/Common.cpp
-  src/Domain/Batch.cpp
-  src/Domain/OrderlLine.cpp
+  src/Domain/Product/Batch.cpp
+  src/Domain/Product/Product.cpp
   src/Adapters/Database/DbTables.cpp
   src/Adapters/Repository/SqlRepository.cpp
   src/Adapters/Repository/FakeRepository.cpp

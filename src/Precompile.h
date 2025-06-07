@@ -14,6 +14,8 @@
 #include <numeric>
 #include <sstream>
 #include <mutex>
+#include <ranges>
+#include <tuple>
 
 
 /// Poco

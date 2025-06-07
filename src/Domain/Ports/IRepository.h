@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Batch.h"
+#include "Product/Product.h"
 
 
 namespace Allocation::Domain
@@ -11,10 +11,7 @@ namespace Allocation::Domain
         virtual ~IRepository() = default;
 
         virtual void Add(const Domain::Batch& batch) = 0;
-
-        virtual std::optional<Batch> Get(const std::string& reference) = 0;
-
-        virtual std::vector<Batch> List() = 0;
+        virtual [[nodiscard]] std::optional<Product> Get(std::string_view reference) const noexcept = 0;
     };
    
 }

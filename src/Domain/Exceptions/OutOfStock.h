@@ -3,7 +3,7 @@
 #include "Precompile.h"
 
 
-namespace Allocation::Domain
+namespace Allocation::Domain::Exceptions
 {
 
     class OutOfStock : public std::exception

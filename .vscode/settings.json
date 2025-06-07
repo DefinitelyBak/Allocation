@@ -87,6 +87,7 @@
       "string_view": "cpp",
       "cinttypes": "cpp",
       "stack": "cpp",
-      "csignal": "cpp"
+      "csignal": "cpp",
+      "ranges": "cpp"
     }
 }
