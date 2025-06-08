@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Precompile.h"
-#include "OrderLine.h"
+#include "Product/OrderLine.h"
 
 
 namespace Allocation::Adapters::Database::Mapper

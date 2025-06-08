@@ -1,5 +1,6 @@
 #include "SqlUnitOfWork.h"
 #include "Adapters/Repository/SqlRepository.h"
+#include "Adapters/Repository/TrackingRepository.h"
 #include "Session/SessionPool.h"
 
 
@@ -9,18 +10,25 @@ namespace Allocation::Services::UoW
     {
         Poco::Data::Session session;
         Poco::Data::Transaction transaction;
-        std::unique_ptr<Domain::IRepository> repository;
+        Adapters::Repository::TrackingRepository tracking;
+        Adapters::Repository::SqlRepository repository;
 
         Impl()
             : session(Adapters::Database::SessionPool::Instance().GetSession()),
               transaction(session, true),
-              repository(std::make_unique<Adapters::Repository::SqlRepository>(session))
-        {
-        }
+              repository(session),
+              tracking(repository)
+        {}
 
-        void commit() { transaction.commit(); }
+        void commit()
+        {
+            for (auto& [sku, old, newVersion] : tracking.GetChangedVersions())
+                repository.UpdateVersion(sku, old, newVersion);
+            
+            transaction.commit();
+        }
         void rollback() { transaction.rollback(); }
-        Domain::IRepository& getRepo() { return *repository; }
+        Domain::IRepository& getRepo() { return tracking; }
     };
 
     SqlUnitOfWork::SqlUnitOfWork() : _impl(std::make_unique<Impl>()) {}
@@ -38,7 +46,7 @@ namespace Allocation::Services::UoW
         AbstractUnitOfWork::RollBack();
     }
 
-    Domain::IRepository& SqlUnitOfWork::GetBatchRepository()
+    Domain::IRepository& SqlUnitOfWork::GetProductRepository()
     {
         return _impl->getRepo();
     }

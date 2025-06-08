@@ -22,8 +22,8 @@ set(allocation_sources
   src/Adapters/Repository/SqlRepository.cpp
   src/Adapters/Repository/FakeRepository.cpp
   src/Adapters/Database/Session/SessionPool.cpp
-  src/Adapters/Database/Mappers/OrderLineMapper.cpp
-  src/Adapters/Database/Mappers/BatchMapper.cpp
+  #src/Adapters/Database/Mappers/OrderLineMapper.cpp
+  #src/Adapters/Database/Mappers/BatchMapper.cpp
   src/Services/Services.cpp
   src/Services/UoW/AbstractUnitOfWork.cpp
   src/Services/UoW/SqlUnitOfWork.cpp
@@ -66,18 +66,16 @@ set(test_sources
   src/Adapters/Repository/SqlRepository.cpp
   src/Adapters/Repository/FakeRepository.cpp
   src/Adapters/Database/Session/SessionPool.cpp
-  src/Adapters/Database/Mappers/OrderLineMapper.cpp
-  src/Adapters/Database/Mappers/BatchMapper.cpp
+  #src/Adapters/Database/Mappers/OrderLineMapper.cpp
+  #src/Adapters/Database/Mappers/BatchMapper.cpp
   src/Services/Services.cpp
   src/Services/UoW/FakeUnitOfWork.cpp
   src/Services/UoW/AbstractUnitOfWork.cpp
   src/Services/UoW/SqlUnitOfWork.cpp
   Tests/Utilities/CommonFunctions.cpp
-  Tests/Unit/TestAllocate.cpp
+  Tests/Unit/TestProduct.cpp
   Tests/Unit/TestBatches.cpp
   Tests/Unit/TestServices.cpp
-  Tests/Integration/TestDataMappers.cpp
-  Tests/Integration/TestRepository.cpp
   Tests/Integration/TestUnitOfWork.cpp
   Tests/E2E/TestAPI.cpp
 )

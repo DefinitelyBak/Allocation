@@ -25,7 +25,7 @@ namespace Allocation::Domain
             if (batch.CanAllocate(line))
             {
                 batch.Allocate(line);
-                _versionNumber += 1;
+                _versionNumber++;
                 return std::string(batch.GetReference());
             }
         }
@@ -33,12 +33,17 @@ namespace Allocation::Domain
         throw Exceptions::OutOfStock(line.SKU);
     }
 
+    void Product::AddBatch(const Batch& batch) noexcept
+    {
+        _batches.push_back(batch);
+    }
+
     const std::vector<Batch>& Product::GetBatches() const noexcept
     {
         return _batches;
     }
     
-    size_t Product::GetVersionNumber() const noexcept
+    size_t Product::GetVersion() const noexcept
     {
         return _versionNumber;
     }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Precompile.h"
-#include "Batch.h"
+#include "Product/Batch.h"
 
 
 namespace Allocation::Adapters::Database::Mapper

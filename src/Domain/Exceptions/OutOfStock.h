@@ -20,5 +20,4 @@ namespace Allocation::Domain::Exceptions
     private:
         std::string msg;
     };
-
 }

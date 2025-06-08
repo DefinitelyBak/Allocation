@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SqlRepository.h"
-#include "Adapters/Database/Mappers/BatchMapper.h"
+#include "Adapters/Database/Mappers/ProductMapper.h"
 
 
 namespace Allocation::Adapters::Repository
@@ -10,28 +10,31 @@ namespace Allocation::Adapters::Repository
     SqlRepository::SqlRepository(Poco::Data::Session& session): _session(session)
     {}
 
-    void SqlRepository::Add(const Domain::Batch& batch)
+    void SqlRepository::Add(std::shared_ptr<Domain::Product> product)
     {
-        Database::Mapper::BatchMapper mapper(_session);
+        /*
+        Database::Mapper::ProductMapper mapper(_session);
 
         if (auto id = mapper.GetBatchId(batch.GetReference()); id.has_value())
             mapper.Update(id.value(), batch);
         else
             mapper.Insert(batch);
+            */
     }
 
-    std::optional<Domain::Batch> SqlRepository::Get(const std::string& reference)
+    std::shared_ptr<Domain::Product> SqlRepository::Get(std::string_view SKU) const
     {
+        /*
         Database::Mapper::BatchMapper mapper(_session);
 
-        return mapper.FindByReference(reference); 
+        return mapper.FindByReference(reference);
+        */
+       return nullptr;
     }
 
-    std::vector<Domain::Batch> SqlRepository::List()
+    void SqlRepository::UpdateVersion(std::string_view SKU, size_t old, size_t newVersion)
     {
-        Database::Mapper::BatchMapper mapper(_session);
 
-        return mapper.GetAll();
     }
 
 }

@@ -11,20 +11,12 @@ namespace Allocation::Adapters::Repository
     {
     public:
         SqlRepository(Poco::Data::Session& session);
+        void Add(std::shared_ptr<Domain::Product> product) override;
+        [[nodiscard]] std::shared_ptr<Domain::Product> Get(std::string_view SKU) const override;
 
-        SqlRepository(const SqlRepository&) = delete;
-        SqlRepository(SqlRepository&&) = delete;
+        void UpdateVersion(std::string_view SKU, size_t old, size_t newVersion);
 
-        SqlRepository& operator=(const SqlRepository&) = delete;
-        SqlRepository& operator=(SqlRepository&&) = delete;
-
-        void Add(const Domain::Batch& batch);
-
-        std::optional<Domain::Batch> Get(const std::string& reference);
-
-        std::vector<Domain::Batch> List();
     private:
         Poco::Data::Session& _session;
     };
-
 }

@@ -11,11 +11,12 @@ namespace Allocation::Services::UoW
     class FakeUnitOfWork : public AbstractUnitOfWork
     {
     public:
+        FakeUnitOfWork();
         FakeUnitOfWork(Adapters::Repository::FakeRepository& repo);
 
-        Domain::IRepository& GetBatchRepository() override;
+        Domain::IRepository& GetProductRepository() override;
 
     private:
-        Adapters::Repository::FakeRepository& _repo;
+        std::optional<Adapters::Repository::FakeRepository> _repo;
     };
 }

@@ -20,7 +20,7 @@ namespace Allocation::Services::UoW
         void Commit() override;
         void RollBack() override;
 
-        Domain::IRepository& GetBatchRepository() override;
+        Domain::IRepository& GetProductRepository() override;
 
     private:
         std::unique_ptr<Impl> _impl;

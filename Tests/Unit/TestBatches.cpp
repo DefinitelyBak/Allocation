@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "CommonFunctions.h"
-#include "Batch.h"
+#include "Product/Batch.h"
 
 
 namespace Allocation::Tests
@@ -10,7 +10,9 @@ namespace Allocation::Tests
 
     TEST(Domain, test_allocating_to_a_batch_reduces_the_available_quantity)
     {
-        Batch batch("batch-001", "SMALL-TABLE", 20, GetCurrentDate());
+        const std::chrono::year_month_day today(2007y, std::chrono::October, 18d);
+
+        Batch batch("batch-001", "SMALL-TABLE", 20, today);
         OrderLine line("order-ref", "SMALL-TABLE", 2);
         batch.Allocate(line);
         EXPECT_EQ(batch.GetAvailableQuantity(), 18);
