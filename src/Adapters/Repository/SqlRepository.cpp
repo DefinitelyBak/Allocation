@@ -22,7 +22,7 @@ namespace Allocation::Adapters::Repository
             */
     }
 
-    std::shared_ptr<Domain::Product> SqlRepository::Get(std::string_view SKU) const
+    std::shared_ptr<Domain::Product> SqlRepository::Get(std::string_view SKU)
     {
         /*
         Database::Mapper::BatchMapper mapper(_session);

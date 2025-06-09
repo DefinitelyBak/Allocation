@@ -1,15 +1,19 @@
 #include <gtest/gtest.h>
 
+#include "Precompile.h"
 #include "CommonFunctions.h"
+#include "Utilities/Common.h"
+#include "Domain/Exceptions/OutOfStock.h"
 #include "Domain/Product/Product.h"
 
 
 namespace Allocation::Tests
 {
+    using namespace std::chrono;
 
-    const std::chrono::year_month_day today(2007y, std::chrono::October, 18d);
-    const auto tomorrow = today + std::chrono::days(1);
-    const auto later = tomorrow + std::chrono::days(10);
+    const year_month_day today(2020y, January, 31d);
+    const auto tomorrow = today + days(1);
+    const auto later = tomorrow + days(10);
 
     TEST(Domain, test_prefers_warehouse_batches_to_shipments)
     {
@@ -20,8 +24,8 @@ namespace Allocation::Tests
 
         product.Allocate(line);
 
-        EXPECT_EQ(product.GetBatches()[0], 90);
-        EXPECT_EQ(product.GetBatches()[1], 100);
+        EXPECT_EQ(product.GetBatches()[0].GetAvailableQuantity(), 90);
+        EXPECT_EQ(product.GetBatches()[1].GetAvailableQuantity(), 100);
     }
 
     TEST(Domain, test_prefers_earlier_batches)
@@ -34,9 +38,9 @@ namespace Allocation::Tests
 
         product.Allocate(line);
 
-        EXPECT_EQ(product.GetBatches()[0], 100);
-        EXPECT_EQ(product.GetBatches()[1], 90);
-        EXPECT_EQ(product.GetBatches()[2], 100);
+        EXPECT_EQ(product.GetBatches()[0].GetAvailableQuantity(), 100);
+        EXPECT_EQ(product.GetBatches()[1].GetAvailableQuantity(), 90);
+        EXPECT_EQ(product.GetBatches()[2].GetAvailableQuantity(), 100);
     }
 
     TEST(Domain, test_returns_allocated_batch_ref)

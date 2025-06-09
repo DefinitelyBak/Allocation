@@ -17,6 +17,8 @@ namespace Allocation::Services::UoW
         SqlUnitOfWork();
         ~SqlUnitOfWork();
 
+        Poco::Data::Session& GetSession() const noexcept;
+
         void Commit() override;
         void RollBack() override;
 

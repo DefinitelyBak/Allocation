@@ -10,18 +10,18 @@ namespace Allocation::Adapters::Repository
     void TrackingRepository::Add(std::shared_ptr<Domain::Product> product)
     {
         _repo.Add(product);
-        if (!_seen.contains(product->GetReference()))
-            _seenObjByOldVersion[product->GetReference()] = product->GetVersion();
-        _seen[product->GetReference()] = product;
+        if (!_seen.contains(product->GetSKU()))
+            _seenObjByOldVersion[product->GetSKU()] = product->GetVersion();
+        _seen[product->GetSKU()] = product;
     }
     
-    std::shared_ptr<Domain::Product> TrackingRepository::Get(std::string_view SKU) const
+    std::shared_ptr<Domain::Product> TrackingRepository::Get(std::string_view SKU)
     {
         auto product = _repo.Get(SKU);
         if (product)
         {
-            _seen[product->GetReference()] = product;
-            _seenObjByOldVersion[product->GetReference()] = product->GetVersion(); 
+            _seen[product->GetSKU()] = product;
+            _seenObjByOldVersion[product->GetSKU()] = product->GetVersion(); 
         }
 
         return product;
@@ -29,7 +29,7 @@ namespace Allocation::Adapters::Repository
 
     std::vector<std::shared_ptr<Domain::Product>> TrackingRepository::GetSeen() const noexcept
     {
-        std::vector<std::shared_ptr<Product>> result;
+        std::vector<std::shared_ptr<Domain::Product>> result;
         result.reserve(_seen.size());
         for (const auto& [_, product] : _seen)
             result.push_back(product);
@@ -43,9 +43,15 @@ namespace Allocation::Adapters::Repository
 
         for(auto& [sku, prod] : _seen)
         {
-            if(prod->GetVersion() == _seenObjByOldVersion[sku])
+            auto oldVersionIt = _seenObjByOldVersion.find(sku);
+            if(oldVersionIt == _seenObjByOldVersion.end())
                 continue;
-            result.emplace_back(sku, _seenObjByOldVersion[sku], prod->GetVersion());
+
+            size_t oldVersion = oldVersionIt->second;
+            if(prod->GetVersion() == oldVersion)
+                continue;
+            
+            result.emplace_back(sku, oldVersion, prod->GetVersion());
         }
 
         return result;

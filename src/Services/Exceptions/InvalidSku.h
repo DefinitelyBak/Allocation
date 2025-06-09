@@ -3,13 +3,13 @@
 #include "Precompile.h"
 
 
-namespace Allocation::Services
+namespace Allocation::Services::Exceptions
 {
 
     class InvalidSku : public std::exception
     {
     public:
-        InvalidSku(std::string_view msg) : msg(msg) 
+        InvalidSku(std::string_view SKU) : msg(std::format("Invalid sku {}", SKU)) 
         {}
 
         char const* what() const noexcept override

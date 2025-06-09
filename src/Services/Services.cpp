@@ -23,14 +23,14 @@ namespace Allocation::Services
 
     std::string Allocate(
         Domain::IUnitOfWork& uow,
-        std::string orderid, std::string sku, int qty)
+        std::string_view orderid, std::string_view sku, size_t qty)
     {
-        Domain::OrderLine line(orderid, sku, qty);
+        Domain::OrderLine line(std::string(orderid), std::string(sku), qty);
 
         auto& products = uow.GetProductRepository();
         auto product = products.Get(sku);
         if (!product)
-            throw InvalidSku(std::format("Invalid sku {}", sku));
+            throw Exceptions::InvalidSku(sku);
         
         auto ref = product->Allocate(line);
         products.Add(product);

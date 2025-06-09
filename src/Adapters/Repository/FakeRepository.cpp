@@ -16,7 +16,7 @@ namespace Allocation::Adapters::Repository
         _skuByProduct.insert_or_assign(product->GetSKU(), product);
     }
 
-    std::shared_ptr<Domain::Product> FakeRepository::Get(std::string_view SKU) const
+    std::shared_ptr<Domain::Product> FakeRepository::Get(std::string_view SKU)
     {
         auto it = _skuByProduct.find(std::string(SKU));
         if (it != _skuByProduct.end())

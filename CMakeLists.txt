@@ -20,6 +20,7 @@ set(allocation_sources
   src/Domain/Product/Product.cpp
   src/Adapters/Database/DbTables.cpp
   src/Adapters/Repository/SqlRepository.cpp
+  src/Adapters/Repository/TrackingRepository.cpp
   src/Adapters/Repository/FakeRepository.cpp
   src/Adapters/Database/Session/SessionPool.cpp
   #src/Adapters/Database/Mappers/OrderLineMapper.cpp
@@ -64,6 +65,7 @@ set(test_sources
   src/Domain/Product/Product.cpp
   src/Adapters/Database/DbTables.cpp
   src/Adapters/Repository/SqlRepository.cpp
+  src/Adapters/Repository/TrackingRepository.cpp
   src/Adapters/Repository/FakeRepository.cpp
   src/Adapters/Database/Session/SessionPool.cpp
   #src/Adapters/Database/Mappers/OrderLineMapper.cpp

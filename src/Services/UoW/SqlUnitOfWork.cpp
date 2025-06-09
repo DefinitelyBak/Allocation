@@ -40,6 +40,11 @@ namespace Allocation::Services::UoW
         AbstractUnitOfWork::Commit();
     }
 
+    Poco::Data::Session& SqlUnitOfWork::GetSession() const noexcept
+    {
+        return _impl->session;
+    }
+
     void SqlUnitOfWork::RollBack()
     {
         _impl->rollback();

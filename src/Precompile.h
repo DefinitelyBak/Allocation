@@ -16,6 +16,8 @@
 #include <mutex>
 #include <ranges>
 #include <tuple>
+#include <thread>
+#include <atomic>
 
 
 /// Poco

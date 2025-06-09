@@ -14,8 +14,10 @@ namespace Allocation::Domain
                         std::vector<Batch> batches = {},
                         size_t versionNumber = 0);
 
-        [[nodiscard]] std::string Allocate(const OrderLine& line);
         void AddBatch(const Batch& batch) noexcept;
+        void AddBatches(const std::vector<Batch>& batches) noexcept;
+
+        [[nodiscard]] std::string Allocate(const OrderLine& line);
         [[nodiscard]] const std::vector<Batch>& GetBatches() const noexcept;
         [[nodiscard]] size_t GetVersion() const noexcept;
         [[nodiscard]] std::string GetSKU() const noexcept;

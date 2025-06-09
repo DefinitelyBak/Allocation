@@ -13,5 +13,5 @@ namespace Allocation::Services
 
     std::string Allocate(
         Domain::IUnitOfWork& uow, std::string_view orderid,
-        std::string_view SKU, int qty);
+        std::string_view SKU, size_t qty);
 }

@@ -9,8 +9,6 @@ namespace Allocation::Tests
 {
     Poco::URI GetURI(std::string command);
 
-    Poco::Data::Session GetFakeSession();
-
     std::pair<Domain::Batch, Domain::OrderLine> MakeBatchAndLine(
         const std::string& SKU, size_t batchQty, size_t lineQty);
 
@@ -36,20 +34,12 @@ namespace Allocation::Tests
         }
     }
 
-    int InsertOrderLine(Poco::Data::Session& session, std::string orderId = "order1", std::string sku = "GENERIC-SOFA", int qty = 12);
-
-    int InsertBatch(Poco::Data::Session& session, std::string batchRef, std::string sku = "GENERIC-SOFA", int qty = 100);
-
-    void InsertAllocation(Poco::Data::Session& session, int orderlineId, int batchId);
+    int InsertBatch(Poco::Data::Session& session, std::string batchRef, std::string sku = "GENERIC-SOFA", int qty = 100, int version = 0);
 
     std::vector<std::string> GetAllocations(Poco::Data::Session& session, std::string batchRef);
 
     std::string RandomSku(const std::string& name = "");
-
     std::string RandomBatchRef(const std::string& name = "");
-
     std::string RandomOrderId(const std::string& name = "");
-
     std::string GetAllocatedBatchRef(Poco::Data::Session& session, std::string orderid, std::string sku);
-
 }

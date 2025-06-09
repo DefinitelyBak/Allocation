@@ -10,6 +10,16 @@ namespace Allocation::Domain
         _sku(SKU), _batches(std::move(batches)), _versionNumber(versionNumber)
         {}
 
+    void Product::AddBatch(const Batch& batch) noexcept
+    {
+        _batches.push_back(batch);
+    }
+
+    void Product::AddBatches(const std::vector<Batch>& batches) noexcept
+    {
+        _batches.insert(_batches.end(), batches.begin(), batches.end());
+    }
+
     std::string Product::Allocate(const OrderLine& line)
     {
         std::vector<std::reference_wrapper<Batch>> sortedBatches;
@@ -31,11 +41,6 @@ namespace Allocation::Domain
         }
 
         throw Exceptions::OutOfStock(line.SKU);
-    }
-
-    void Product::AddBatch(const Batch& batch) noexcept
-    {
-        _batches.push_back(batch);
     }
 
     const std::vector<Batch>& Product::GetBatches() const noexcept
