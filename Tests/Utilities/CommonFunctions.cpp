@@ -1,5 +1,4 @@
 #include "CommonFunctions.h"
-#include "Adapters/Database/Session/FakeSessionImpl.h"
 
 
 namespace Allocation::Tests
@@ -21,54 +20,34 @@ namespace Allocation::Tests
         return uri;
     }
 
-    std::chrono::year_month_day GetCurrentDate()
-    {
-        const std::chrono::time_point now{std::chrono::system_clock::now()};
-        return std::chrono::floor<std::chrono::days>(now);
-    }
-
     std::pair<Domain::Batch, Domain::OrderLine> MakeBatchAndLine(
         const std::string& SKU, size_t batchQty, size_t lineQty)
     {
-        return {Domain::Batch("batch-001", SKU, batchQty, GetCurrentDate()),
+        return {Domain::Batch("batch-001", SKU, batchQty),
                 Domain::OrderLine("order-123", SKU, lineQty)};
     }
 
     int InsertBatch(Poco::Data::Session& session, std::string batchRef, std::string sku , int qty, int version)
     {
-        session << R"(INSERT INTO batches (reference, sku, _purchased_quantity, eta) VALUES (?, ?, ?, NULL))",
+        session << R"(INSERT INTO products (sku, version_number) VALUES ($1, $2))",
+            Poco::Data::Keywords::use(sku),
+            Poco::Data::Keywords::use(version),
+            Poco::Data::Keywords::now;
+
+        session << R"(INSERT INTO batches (reference, sku, _purchased_quantity, eta) VALUES ($1, $2, $3, NULL))",
             Poco::Data::Keywords::use(batchRef),
             Poco::Data::Keywords::use(sku),
             Poco::Data::Keywords::use(qty),
             Poco::Data::Keywords::now;
 
         int id = 0;
-        session << R"(SELECT id FROM batches WHERE reference = ? AND sku = ?)",
+        session << R"(SELECT id FROM batches WHERE reference = $1 AND sku = $2)",
             Poco::Data::Keywords::into(id),
             Poco::Data::Keywords::use(batchRef),
             Poco::Data::Keywords::use(sku),
             Poco::Data::Keywords::now;
 
         return id;
-    }
-
-    std::vector<std::string> GetAllocations(Poco::Data::Session& session, std::string batchRef)
-    {
-        std::vector<std::string> results;
-
-        Poco::Data::Statement select(session);
-        select << R"(
-            SELECT order_lines.orderid 
-            FROM allocations
-            JOIN order_lines ON allocations.orderline_id = order_lines.id
-            JOIN batches ON allocations.batch_id = batches.id
-            WHERE batches.reference = ?
-        )",
-            Poco::Data::Keywords::use(batchRef),
-            Poco::Data::Keywords::into(results),
-            Poco::Data::Keywords::now;
-
-        return results;
     }
 
     std::string RandomSuffix()
@@ -96,9 +75,8 @@ namespace Allocation::Tests
         int orderlineId = 0;
         std::string batchref;
 
-        // Получение ID строки заказа
         Poco::Data::Statement selectOrderLine(session);
-        selectOrderLine << "SELECT id FROM order_lines WHERE orderid = ? AND sku = ?",
+        selectOrderLine << "SELECT id FROM order_lines WHERE orderid = $1 AND sku = $2",
                         Poco::Data::Keywords::use(orderid),
                         Poco::Data::Keywords::use(sku),
                         Poco::Data::Keywords::into(orderlineId),
@@ -112,7 +90,7 @@ namespace Allocation::Tests
             SELECT b.reference 
             FROM allocations 
             JOIN batches AS b ON batch_id = b.id 
-            WHERE orderline_id = ?
+            WHERE orderline_id = $1
         )",
         Poco::Data::Keywords::use(orderlineId),
         Poco::Data::Keywords::into(batchref),
@@ -123,5 +101,4 @@ namespace Allocation::Tests
 
         return batchref;
     }    
-
 }

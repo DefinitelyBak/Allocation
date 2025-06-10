@@ -14,6 +14,7 @@
 #include <numeric>
 #include <sstream>
 #include <mutex>
+#include <shared_mutex>
 #include <ranges>
 #include <tuple>
 #include <thread>
@@ -21,7 +22,9 @@
 
 
 /// Poco
+#include <Poco/File.h>
 #include "Poco/Data/Session.h"
+#include <Poco/Data/PostgreSQL/Connector.h>
 #include <Poco/Data/Connector.h>
 #include "Poco/Data/SQLite/Connector.h"
 #include "Poco/Data/RecordSet.h"

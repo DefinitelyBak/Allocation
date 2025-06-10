@@ -25,6 +25,7 @@ set(allocation_sources
   src/Adapters/Database/Session/SessionPool.cpp
   #src/Adapters/Database/Mappers/OrderLineMapper.cpp
   #src/Adapters/Database/Mappers/BatchMapper.cpp
+  #src/Adapters/Database/Mappers/ProductMapper.cpp
   src/Services/Services.cpp
   src/Services/UoW/AbstractUnitOfWork.cpp
   src/Services/UoW/SqlUnitOfWork.cpp
@@ -68,13 +69,15 @@ set(test_sources
   src/Adapters/Repository/TrackingRepository.cpp
   src/Adapters/Repository/FakeRepository.cpp
   src/Adapters/Database/Session/SessionPool.cpp
-  #src/Adapters/Database/Mappers/OrderLineMapper.cpp
-  #src/Adapters/Database/Mappers/BatchMapper.cpp
+  src/Adapters/Database/Mappers/OrderLineMapper.cpp
+  src/Adapters/Database/Mappers/BatchMapper.cpp
+  src/Adapters/Database/Mappers/ProductMapper.cpp
   src/Services/Services.cpp
   src/Services/UoW/FakeUnitOfWork.cpp
   src/Services/UoW/AbstractUnitOfWork.cpp
   src/Services/UoW/SqlUnitOfWork.cpp
   Tests/Utilities/CommonFunctions.cpp
+  Tests/Utilities/UoWFixture.cpp
   Tests/Unit/TestProduct.cpp
   Tests/Unit/TestBatches.cpp
   Tests/Unit/TestServices.cpp

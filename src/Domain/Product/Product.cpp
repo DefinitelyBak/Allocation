@@ -7,25 +7,29 @@ namespace Allocation::Domain
 {
 
     Product::Product(std::string_view SKU, std::vector<Batch> batches, size_t versionNumber):
-        _sku(SKU), _batches(std::move(batches)), _versionNumber(versionNumber)
-        {}
+        _sku(SKU),  _versionNumber(versionNumber)
+    {
+        for (auto& batch : batches)
+            _referenceByBatches.insert({std::string(batch.GetReference()), std::move(batch)}); 
+    }
 
     void Product::AddBatch(const Batch& batch) noexcept
     {
-        _batches.push_back(batch);
+        _referenceByBatches.insert_or_assign(std::string(batch.GetReference()), batch);
     }
 
     void Product::AddBatches(const std::vector<Batch>& batches) noexcept
     {
-        _batches.insert(_batches.end(), batches.begin(), batches.end());
+        for (auto& batch : batches)
+            _referenceByBatches.insert_or_assign(std::string(batch.GetReference()), batch);
     }
 
     std::string Product::Allocate(const OrderLine& line)
     {
         std::vector<std::reference_wrapper<Batch>> sortedBatches;
-        sortedBatches.reserve(_batches.size());
+        sortedBatches.reserve(_referenceByBatches.size());
 
-        for (auto& batch : _batches)
+        for (auto& [_, batch] : _referenceByBatches)
             sortedBatches.emplace_back(batch);
 
         std::ranges::sort(sortedBatches, BatchETAComparator{});
@@ -43,9 +47,13 @@ namespace Allocation::Domain
         throw Exceptions::OutOfStock(line.SKU);
     }
 
-    const std::vector<Batch>& Product::GetBatches() const noexcept
+    std::vector<Batch> Product::GetBatches() const noexcept
     {
-        return _batches;
+        std::vector<Batch> result;
+        for (auto& [_, batch] : _referenceByBatches)
+            result.push_back(batch);
+
+        return result;
     }
     
     size_t Product::GetVersion() const noexcept
@@ -57,5 +65,4 @@ namespace Allocation::Domain
     {
         return _sku;
     }
-
 }

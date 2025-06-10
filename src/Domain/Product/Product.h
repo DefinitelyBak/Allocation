@@ -18,13 +18,13 @@ namespace Allocation::Domain
         void AddBatches(const std::vector<Batch>& batches) noexcept;
 
         [[nodiscard]] std::string Allocate(const OrderLine& line);
-        [[nodiscard]] const std::vector<Batch>& GetBatches() const noexcept;
+        [[nodiscard]] std::vector<Batch> GetBatches() const noexcept;
         [[nodiscard]] size_t GetVersion() const noexcept;
         [[nodiscard]] std::string GetSKU() const noexcept;
 
     private:
         std::string _sku;
-        std::vector<Batch> _batches;
+        std::unordered_map<std::string, Batch> _referenceByBatches;
         size_t _versionNumber;
     };
 }

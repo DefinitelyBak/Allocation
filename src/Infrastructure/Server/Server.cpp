@@ -71,7 +71,6 @@ namespace Allocation::Infrastructure::Server
         Poco::Data::SQLite::Connector::registerConnector();
         Adapters::Database::SessionPool::Instance().Configure("SQLite", "TestBd");
         auto session = Adapters::Database::SessionPool::Instance().GetSession();
-        Adapters::Database::InitDatabase(session);
+        Adapters::Database::InitDatabase(session, session.connector());
     }
-
 }

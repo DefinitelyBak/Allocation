@@ -36,8 +36,6 @@ namespace Allocation::Tests
 
     int InsertBatch(Poco::Data::Session& session, std::string batchRef, std::string sku = "GENERIC-SOFA", int qty = 100, int version = 0);
 
-    std::vector<std::string> GetAllocations(Poco::Data::Session& session, std::string batchRef);
-
     std::string RandomSku(const std::string& name = "");
     std::string RandomBatchRef(const std::string& name = "");
     std::string RandomOrderId(const std::string& name = "");

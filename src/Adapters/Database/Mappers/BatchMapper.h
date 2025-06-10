@@ -11,21 +11,15 @@ namespace Allocation::Adapters::Database::Mapper
     {
     public:
         BatchMapper(Poco::Data::Session& session);
-
-        std::optional<int> GetBatchId(std::string reference);
-
-        std::vector<Domain::Batch> GetAll();
-
-        void Insert(const Domain::Batch& batch);
-
-        void Update(int id, const Domain::Batch& batch);
-
-        std::optional<Domain::Batch> FindByReference(std::string reference);
-    private:
-        void UpdateAllocations(size_t batchId, const std::vector<Domain::OrderLine>& orders);
+        std::vector<Domain::Batch> GetBySKU(std::string SKU);
+        void Update(const std::vector<Domain::Batch>& batches, std::string SKU);
+        void Insert(const std::vector<Domain::Batch>& batches);
 
     private:
+        void DeleteBatches(std::string SKU);
+        int GetIdBatch(std::string reference);
+        std::vector<int> GetIdBatches(std::string SKU);
+
         Poco::Data::Session& _session;
     };
-
 }

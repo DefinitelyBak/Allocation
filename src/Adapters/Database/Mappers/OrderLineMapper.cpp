@@ -33,35 +33,13 @@ namespace Allocation::Adapters::Database::Mapper
         return result;
     }
 
-    std::vector<Domain::OrderLine> OrderLineMapper::FindAll()
-    {
-        Poco::Data::Statement select(_session);
-        select << "SELECT sku, qty, orderid FROM order_lines", 
-                    Poco::Data::Keywords::now;
-
-        Poco::Data::RecordSet rs(select);
-        std::vector<Domain::OrderLine> result;
-        bool more = rs.moveFirst();
-        while (more)
-        {
-            std::string sku = rs["sku"].convert<std::string>();
-            size_t qty = rs["qty"].convert<size_t>();
-            std::string orderid = rs["orderid"].convert<std::string>();
-
-            result.emplace_back(orderid, sku, qty);
-            more = rs.moveNext();
-        }
-
-        return result;
-    }
-
     void OrderLineMapper::Insert(size_t batchId, const std::vector<Domain::OrderLine>& orders)
     {
         for (const auto& order : orders)
         {
-            std::string sku = order.GetSKU();
-            int qty = static_cast<int>(order.GetQuantity());
-            std::string orderid = order.GetOrderReference();
+            std::string sku = order.SKU;
+            int qty = static_cast<int>(order.quantity);
+            std::string orderid = order.reference;
 
             _session << R"(
                 INSERT INTO order_lines (sku, qty, orderid)
@@ -93,25 +71,12 @@ namespace Allocation::Adapters::Database::Mapper
         }
     }
 
-    void OrderLineMapper::Insert(const Domain::OrderLine& orderLine)
-    {
-        auto sku = orderLine.GetSKU();
-        auto orderRef = orderLine.GetOrderReference();
-        auto qty = static_cast<Poco::UInt64>(orderLine.GetQuantity());
-
-        _session << R"(INSERT INTO order_lines (sku, qty, orderid) VALUES(?, ?, ?))",
-                        Poco::Data::Keywords::use(sku),
-                        Poco::Data::Keywords::use(qty),
-                        Poco::Data::Keywords::use(orderRef),
-                        Poco::Data::Keywords::now;
-    }
-        
-    void OrderLineMapper::RemoveByBatchId(size_t batchId)
+    void OrderLineMapper::RemoveByBatchesId(std::vector<int> batchesId)
     {
         _session << R"(
-            DELETE FROM allocations WHERE batch_id = ?
+            DELETE FROM allocations WHERE batch_id IN (?)
         )",
-        Poco::Data::Keywords::use(batchId),
+        Poco::Data::Keywords::use(batchesId),
         Poco::Data::Keywords::now;
 
         _session << R"(
@@ -122,5 +87,4 @@ namespace Allocation::Adapters::Database::Mapper
         )",
         Poco::Data::Keywords::now;
     }
-
 }

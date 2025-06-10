@@ -11,5 +11,4 @@ namespace Allocation::Infrastructure::Server::Handlers
     public:
         void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response) override;
     };
-
 }

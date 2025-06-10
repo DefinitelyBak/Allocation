@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include "Forwards.h"
 #include "CommonFunctions.h"
 #include "Adapters/Repository/FakeRepository.h"
 #include "Services.h"

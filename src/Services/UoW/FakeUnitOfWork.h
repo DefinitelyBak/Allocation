@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Precompile.h"
-#include "Forwards.h"
 #include "AbstractUnitOfWork.h"
 #include "Adapters/Repository/FakeRepository.h"
 

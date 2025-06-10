@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include "Forwards.h"
 #include "Precompile.h"
 #include "CommonFunctions.h"
 #include "Utilities/Common.h"

@@ -12,29 +12,25 @@ namespace Allocation::Adapters::Repository
 
     void SqlRepository::Add(std::shared_ptr<Domain::Product> product)
     {
-        /*
         Database::Mapper::ProductMapper mapper(_session);
 
-        if (auto id = mapper.GetBatchId(batch.GetReference()); id.has_value())
-            mapper.Update(id.value(), batch);
+        if (mapper.IsExists(product->GetSKU()))
+            mapper.Update(product);
         else
-            mapper.Insert(batch);
-            */
+            mapper.Insert(product);
     }
 
     std::shared_ptr<Domain::Product> SqlRepository::Get(std::string_view SKU)
     {
-        /*
-        Database::Mapper::BatchMapper mapper(_session);
-
-        return mapper.FindByReference(reference);
-        */
-       return nullptr;
+        Database::Mapper::ProductMapper mapper(_session);
+        return mapper.FindBySKU(std::string(SKU));
     }
 
     void SqlRepository::UpdateVersion(std::string_view SKU, size_t old, size_t newVersion)
     {
-
+        Database::Mapper::ProductMapper mapper(_session);
+        if(!mapper.UpdateVersion(std::string(SKU), old, newVersion))
+            throw std::exception("Could not serialize access due to concurrent update");
     }
 
 }

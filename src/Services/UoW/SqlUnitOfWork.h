@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Precompile.h"
-#include "Forwards.h"
 #include "AbstractUnitOfWork.h"
 #include "Domain/Ports/IRepository.h"
 #include "Domain/Ports/IUnitOfWork.h"

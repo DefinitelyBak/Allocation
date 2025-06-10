@@ -1,35 +1,19 @@
 #include <gtest/gtest.h>
 
 #include "Precompile.h"
-#include "Forwards.h"
-#include "Adapters/Database/Session/SessionPool.h"
-#include "Adapters/Database/DbTables.h"
-#include "Services/UoW/SqlUnitOfWork.h"
+#include "Common.h"
 #include "CommonFunctions.h"
+#include "UoWFixture.h"
+#include "Services/UoW/SqlUnitOfWork.h"
 
 
 namespace Allocation::Tests
 {
 
-    class UnitOfWorkFixture : public ::testing::Test
-    {
-    protected:
-        std::optional<Poco::Data::Session> session;
-
-        void SetUp() override
-        {
-            Poco::Data::SQLite::Connector::registerConnector();
-            /// @todo: убрать sqlLite, использовать PostgresSQL
-            Adapters::Database::SessionPool::Instance().Configure("SQLite", "file:memdb1?mode=memory&cache=shared");
-            session = Adapters::Database::SessionPool::Instance().GetSession();
-            Adapters::Database::InitDatabase(*session);
-        }
-    };
-
-    TEST_F(UnitOfWorkFixture, test_uow_can_retrieve_a_batch_and_allocate_to_it)
+    TEST_F(UoWFixture, test_uow_can_retrieve_a_batch_and_allocate_to_it)
     {
         InsertBatch(*session, "batch1", "HIPSTER-WORKBENCH", 100);
-
+        
         Services::UoW::SqlUnitOfWork uow;
         auto product = uow.GetProductRepository().Get("HIPSTER-WORKBENCH");
         Domain::OrderLine line("o1", "HIPSTER-WORKBENCH", 10);
@@ -41,8 +25,7 @@ namespace Allocation::Tests
         EXPECT_EQ(batchRef, "batch1");
     }
 
-
-    TEST_F(UnitOfWorkFixture, test_rolls_back_uncommitted_work_by_default)
+    TEST_F(UoWFixture, test_rolls_back_uncommitted_work_by_default)
     {
         {
             Services::UoW::SqlUnitOfWork uow;
@@ -58,7 +41,7 @@ namespace Allocation::Tests
         EXPECT_EQ(count, 0);
     }
 
-    TEST_F(UnitOfWorkFixture, test_rolls_back_on_error)
+    TEST_F(UoWFixture, test_rolls_back_on_error)
     {
         try
         {
@@ -82,7 +65,8 @@ namespace Allocation::Tests
     void tryToAllocate(std::string orderid, std::string sku,
                     std::mutex& mutex, std::vector<std::string>& exceptions)
     {
-        try {
+        try
+        {
             Domain::OrderLine line(orderid, sku, 10);
             Services::UoW::SqlUnitOfWork uow;
             auto product = uow.GetProductRepository().Get(sku);
@@ -97,7 +81,7 @@ namespace Allocation::Tests
         }
     }
 
-    TEST_F(UnitOfWorkFixture, test_concurrent_updates_to_version_are_not_allowed)
+    TEST_F(UoWFixture, test_concurrent_updates_to_version_are_not_allowed)
     {
         std::string SKU = RandomSku();
         std::string batch = RandomBatchRef();
