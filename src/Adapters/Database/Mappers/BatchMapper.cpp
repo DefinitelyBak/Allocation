@@ -50,7 +50,7 @@ namespace Allocation::Adapters::Database::Mapper
         return result;
     }
 
-    void BatchMapper::Update(const std::vector<Domain::Batch>& batches, std::string SKU)
+    void BatchMapper::Update(const std::vector<Domain::Batch>& batches, const std::string& SKU)
     {
         DeleteBatches(SKU);
         if (!batches.empty())

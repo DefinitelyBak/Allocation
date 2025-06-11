@@ -13,7 +13,7 @@ namespace Allocation::Adapters::Database::Mapper
         explicit BatchMapper(Poco::Data::Session& session);
 
         std::vector<Domain::Batch> GetBySKU(const std::string& SKU);
-        void Update(const std::vector<Domain::Batch>& batches, std::string SKU);
+        void Update(const std::vector<Domain::Batch>& batches, const std::string& SKU);
         void Insert(const std::vector<Domain::Batch>& batches);
 
     private:

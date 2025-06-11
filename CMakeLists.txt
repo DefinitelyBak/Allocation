@@ -73,7 +73,6 @@ set(test_sources
   src/Adapters/Database/Mappers/BatchMapper.cpp
   src/Adapters/Database/Mappers/ProductMapper.cpp
   src/Services/Services.cpp
-  src/Services/UoW/FakeUnitOfWork.cpp
   src/Services/UoW/AbstractUnitOfWork.cpp
   src/Services/UoW/SqlUnitOfWork.cpp
   Tests/Utilities/CommonFunctions.cpp

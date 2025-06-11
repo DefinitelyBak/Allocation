@@ -7,15 +7,18 @@
 
 namespace Allocation::Services::UoW
 {
-    class FakeUnitOfWork final : public AbstractUnitOfWork
+    class FakeUnitOfWork final : public AbstractUnitOfWork 
     {
     public:
-        FakeUnitOfWork();
-        FakeUnitOfWork(Adapters::Repository::FakeRepository& repo);
+        FakeUnitOfWork() : _repo(std::make_shared<Adapters::Repository::FakeRepository>()) {}
+        FakeUnitOfWork(std::shared_ptr<Adapters::Repository::FakeRepository> repo) : _repo(repo) {}
 
-        Domain::IRepository& GetProductRepository() override;
+        Domain::IRepository& GetProductRepository()
+        {
+            return *_repo;
+        }
 
     private:
-        std::optional<Adapters::Repository::FakeRepository> _repo;
+        std::shared_ptr<Adapters::Repository::FakeRepository> _repo;
     };
 }

@@ -62,18 +62,17 @@ namespace Allocation::Adapters::Database::Mapper
 
     bool ProductMapper::UpdateVersion(std::string SKU, size_t oldVersion, size_t newVersion)
     {
-        _session << "UPDATE public.products SET version_number = $1 WHERE sku = $2 AND version_number = $3",
+        Poco::Nullable<int> actualVersion;
+        _session << "UPDATE public.products SET version_number = $1 WHERE sku = $2 AND version_number = $3 RETURNING version_number",
+            Poco::Data::Keywords::into(actualVersion),
             Poco::Data::Keywords::use(newVersion),
             Poco::Data::Keywords::use(SKU),
             Poco::Data::Keywords::use(oldVersion),
             Poco::Data::Keywords::now;
 
-        int actualVersion = 0;
-        _session << "SELECT version_number FROM public.products WHERE sku = $1",
-            Poco::Data::Keywords::use(SKU),
-            Poco::Data::Keywords::into(actualVersion),
-            Poco::Data::Keywords::now;
-
-        return actualVersion == newVersion;
+        if (actualVersion.isNull() || (actualVersion.value() != newVersion))
+            return false;
+        
+        return true;
     }
 }

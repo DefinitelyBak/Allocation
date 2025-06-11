@@ -19,6 +19,7 @@
 #include <tuple>
 #include <thread>
 #include <atomic>
+#include <iostream>
 
 
 /// Poco
