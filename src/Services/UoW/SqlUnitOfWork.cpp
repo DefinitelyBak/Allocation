@@ -9,25 +9,27 @@ namespace Allocation::Services::UoW
     struct SqlUnitOfWork::Impl
     {
         Poco::Data::Session session;
-        Poco::Data::Transaction transaction;
         Adapters::Repository::TrackingRepository tracking;
         Adapters::Repository::SqlRepository repository;
 
         Impl()
             : session(Adapters::Database::SessionPool::Instance().GetSession()),
-              transaction(session, true),
               repository(session),
               tracking(repository)
-        {}
+        {
+            session.setTransactionIsolation(Poco::Data::Session::TRANSACTION_REPEATABLE_READ);
+            session.begin();
+        }
 
         void commit()
         {
             for (auto& [sku, old, newVersion] : tracking.GetChangedVersions())
                 repository.UpdateVersion(sku, old, newVersion);
             
-            transaction.commit();
+            session.commit();
         }
-        void rollback() { transaction.rollback(); }
+
+        void rollback() { session.rollback(); }
         Domain::IRepository& getRepo() { return tracking; }
     };
 

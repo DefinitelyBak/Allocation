@@ -6,6 +6,6 @@
 namespace Allocation::Adapters::Database
 {
 
-    void InitDatabase(Poco::Data::Session& session, const std::string& dbType);
+    void InitDatabase(Poco::Data::Session& session);
     void DropDatabase(Poco::Data::Session& session);
 }

@@ -8,12 +8,12 @@ namespace Allocation::Adapters::Database::Mapper
     OrderLineMapper::OrderLineMapper(Poco::Data::Session& session): _session(session)
     {}
 
-    std::vector<Domain::OrderLine> OrderLineMapper::FindByBatchId(size_t batchId)
+    std::vector<Domain::OrderLine> OrderLineMapper::FindByBatchId(int batchId)
     {   
         Poco::Data::Statement select(_session);
-        select << R"(SELECT sku, qty, orderid FROM order_lines
-                   JOIN allocations ON allocations.id = order_lines.id
-                   WHERE allocations.batch_id = ?)",
+        select << R"(SELECT sku, qty, orderid FROM public.order_lines
+                   JOIN public.allocations ON allocations.id = order_lines.id
+                   WHERE allocations.batch_id = $1)",
                     Poco::Data::Keywords::use(batchId),
                     Poco::Data::Keywords::now;
 
@@ -33,7 +33,7 @@ namespace Allocation::Adapters::Database::Mapper
         return result;
     }
 
-    void OrderLineMapper::Insert(size_t batchId, const std::vector<Domain::OrderLine>& orders)
+    void OrderLineMapper::Insert(int batchId, const std::vector<Domain::OrderLine>& orders)
     {
         for (const auto& order : orders)
         {
@@ -41,29 +41,21 @@ namespace Allocation::Adapters::Database::Mapper
             int qty = static_cast<int>(order.quantity);
             std::string orderid = order.reference;
 
+            int orderlineId = 0;
             _session << R"(
-                INSERT INTO order_lines (sku, qty, orderid)
-                VALUES (?, ?, ?)
+                INSERT INTO public.order_lines (sku, qty, orderid)
+                VALUES ($1, $2, $3)
+                RETURNING id
             )",
+                Poco::Data::Keywords::into(orderlineId),
                 Poco::Data::Keywords::use(sku),
                 Poco::Data::Keywords::use(qty),
                 Poco::Data::Keywords::use(orderid),
                 Poco::Data::Keywords::now;
 
-            int orderlineId = 0;
             _session << R"(
-                SELECT id FROM order_lines
-                WHERE orderid = ? AND sku = ?
-                ORDER BY id DESC LIMIT 1
-            )",
-                Poco::Data::Keywords::into(orderlineId),
-                Poco::Data::Keywords::use(orderid),
-                Poco::Data::Keywords::use(sku),
-                Poco::Data::Keywords::now;
-
-            _session << R"(
-                INSERT INTO allocations (orderline_id, batch_id)
-                VALUES (?, ?)
+                INSERT INTO public.allocations (orderline_id, batch_id)
+                VALUES ($1, $2)
             )",
                 Poco::Data::Keywords::use(orderlineId),
                 Poco::Data::Keywords::use(batchId),
@@ -74,15 +66,15 @@ namespace Allocation::Adapters::Database::Mapper
     void OrderLineMapper::RemoveByBatchesId(std::vector<int> batchesId)
     {
         _session << R"(
-            DELETE FROM allocations WHERE batch_id IN (?)
+            DELETE FROM public.allocations WHERE batch_id IN ($1)
         )",
         Poco::Data::Keywords::use(batchesId),
         Poco::Data::Keywords::now;
 
         _session << R"(
-            DELETE FROM order_lines 
+            DELETE FROM public.order_lines 
             WHERE id NOT IN (
-                SELECT orderline_id FROM allocations
+                SELECT orderline_id FROM public.allocations
             )
         )",
         Poco::Data::Keywords::now;

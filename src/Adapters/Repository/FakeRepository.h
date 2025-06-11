@@ -8,7 +8,7 @@
 namespace Allocation::Adapters::Repository
 {
 
-    class FakeRepository : public Domain::IRepository
+    class FakeRepository final : public Domain::IRepository
     {
     public:
         FakeRepository() = default;
@@ -20,5 +20,4 @@ namespace Allocation::Adapters::Repository
     private:
         std::unordered_map<std::string, std::shared_ptr<Domain::Product>> _skuByProduct;
     };
-
 }

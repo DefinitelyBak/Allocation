@@ -9,8 +9,8 @@ namespace Allocation::Tests
     {
         try
         {
-            session = Adapters::Database::SessionPool::Instance().GetSession();
-            Adapters::Database::InitDatabase(*session, session->connector());
+            auto session = Adapters::Database::SessionPool::Instance().GetSession();
+            Adapters::Database::InitDatabase(session);
         }
         catch (const Poco::Exception& ex)
         {
@@ -26,7 +26,8 @@ namespace Allocation::Tests
     {
         try
         {
-            Adapters::Database::DropDatabase(*session);
+            auto session = Adapters::Database::SessionPool::Instance().GetSession();
+            Adapters::Database::DropDatabase(session);
         }
         catch (const Poco::Exception& ex)
         {

@@ -7,7 +7,7 @@
 namespace Allocation::Adapters::Repository
 {
 
-    class TrackingRepository : public Domain::IRepository
+    class TrackingRepository final : public Domain::IRepository
     {
     public:
         TrackingRepository(Domain::IRepository& repo);

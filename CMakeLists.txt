@@ -23,9 +23,9 @@ set(allocation_sources
   src/Adapters/Repository/TrackingRepository.cpp
   src/Adapters/Repository/FakeRepository.cpp
   src/Adapters/Database/Session/SessionPool.cpp
-  #src/Adapters/Database/Mappers/OrderLineMapper.cpp
-  #src/Adapters/Database/Mappers/BatchMapper.cpp
-  #src/Adapters/Database/Mappers/ProductMapper.cpp
+  src/Adapters/Database/Mappers/OrderLineMapper.cpp
+  src/Adapters/Database/Mappers/BatchMapper.cpp
+  src/Adapters/Database/Mappers/ProductMapper.cpp
   src/Services/Services.cpp
   src/Services/UoW/AbstractUnitOfWork.cpp
   src/Services/UoW/SqlUnitOfWork.cpp

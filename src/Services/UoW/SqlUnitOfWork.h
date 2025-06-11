@@ -8,7 +8,7 @@
 
 namespace Allocation::Services::UoW
 {
-    class SqlUnitOfWork : public AbstractUnitOfWork 
+    class SqlUnitOfWork final : public AbstractUnitOfWork 
     {
         struct Impl;
 

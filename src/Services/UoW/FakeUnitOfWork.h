@@ -7,7 +7,7 @@
 
 namespace Allocation::Services::UoW
 {
-    class FakeUnitOfWork : public AbstractUnitOfWork
+    class FakeUnitOfWork final : public AbstractUnitOfWork
     {
     public:
         FakeUnitOfWork();

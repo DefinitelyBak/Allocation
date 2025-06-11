@@ -10,7 +10,7 @@ namespace Allocation::Adapters::Database::Mapper
     class ProductMapper
     {
     public:
-        ProductMapper(Poco::Data::Session& session);
+        explicit ProductMapper(Poco::Data::Session& session);
 
         bool IsExists(std::string SKU);
         std::shared_ptr<Domain::Product> FindBySKU(std::string SKU);

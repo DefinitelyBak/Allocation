@@ -11,7 +11,7 @@ namespace Allocation::Domain
     {
     public:
         explicit Product(std::string_view SKU,
-                        std::vector<Batch> batches = {},
+                        const std::vector<Batch>& batches = {},
                         size_t versionNumber = 0);
 
         void AddBatch(const Batch& batch) noexcept;

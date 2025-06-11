@@ -7,7 +7,7 @@
 namespace Allocation::Adapters::Repository
 {
 
-    class SqlRepository : public Domain::IRepository
+    class SqlRepository final : public Domain::IRepository
     {
     public:
         SqlRepository(Poco::Data::Session& session);

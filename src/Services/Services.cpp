@@ -12,12 +12,10 @@ namespace Allocation::Services
         auto& repo = uow.GetProductRepository();
         std::shared_ptr<Domain::Product> product = repo.Get(SKU);
         if (!product)
-        {
             product = std::make_shared<Domain::Product>(SKU);
-            repo.Add(product);
-        }
 
         product->AddBatch(Domain::Batch(ref, SKU, qty, ETA));
+        repo.Add(product);
         uow.Commit();
     }
 

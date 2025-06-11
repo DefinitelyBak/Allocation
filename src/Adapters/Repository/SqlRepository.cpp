@@ -32,5 +32,4 @@ namespace Allocation::Adapters::Repository
         if(!mapper.UpdateVersion(std::string(SKU), old, newVersion))
             throw std::exception("Could not serialize access due to concurrent update");
     }
-
 }

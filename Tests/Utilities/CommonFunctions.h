@@ -7,8 +7,6 @@
 
 namespace Allocation::Tests
 {
-    Poco::URI GetURI(std::string command);
-
     std::pair<Domain::Batch, Domain::OrderLine> MakeBatchAndLine(
         const std::string& SKU, size_t batchQty, size_t lineQty);
 

@@ -10,8 +10,6 @@ namespace Allocation::Tests
     class UoWFixture : public ::testing::Test
     {
     protected:
-        std::optional<Poco::Data::Session> session;
-
         void SetUp() override;
         void TearDown() override;
 

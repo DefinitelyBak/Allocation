@@ -6,11 +6,11 @@
 namespace Allocation::Domain
 {
 
-    Product::Product(std::string_view SKU, std::vector<Batch> batches, size_t versionNumber):
+    Product::Product(std::string_view SKU, const std::vector<Batch>& batches, size_t versionNumber):
         _sku(SKU),  _versionNumber(versionNumber)
     {
         for (auto& batch : batches)
-            _referenceByBatches.insert({std::string(batch.GetReference()), std::move(batch)}); 
+            AddBatch(batch); 
     }
 
     void Product::AddBatch(const Batch& batch) noexcept
@@ -21,7 +21,7 @@ namespace Allocation::Domain
     void Product::AddBatches(const std::vector<Batch>& batches) noexcept
     {
         for (auto& batch : batches)
-            _referenceByBatches.insert_or_assign(std::string(batch.GetReference()), batch);
+            AddBatch(batch);
     }
 
     std::string Product::Allocate(const OrderLine& line)

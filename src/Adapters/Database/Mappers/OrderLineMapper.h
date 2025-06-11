@@ -10,11 +10,12 @@ namespace Allocation::Adapters::Database::Mapper
     class OrderLineMapper
     {
     public:
-        OrderLineMapper(Poco::Data::Session& session);
-        std::vector<Domain::OrderLine> FindByBatchId(size_t batchId);
-        void Insert(size_t batchId, const std::vector<Domain::OrderLine>& orders);
-        void RemoveByBatchId(size_t batchId);
+        explicit OrderLineMapper(Poco::Data::Session& session);
+
+        std::vector<Domain::OrderLine> FindByBatchId(int batchId);
+        void Insert(int batchId, const std::vector<Domain::OrderLine>& orders);
         void RemoveByBatchesId(std::vector<int> batchesId);
+
     private:
         Poco::Data::Session& _session;
     };

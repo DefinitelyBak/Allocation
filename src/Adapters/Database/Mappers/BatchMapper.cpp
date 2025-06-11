@@ -8,7 +8,7 @@ namespace Allocation::Adapters::Database::Mapper
     BatchMapper::BatchMapper(Poco::Data::Session& session): _session(session)
     {}
 
-    std::vector<Domain::Batch> BatchMapper::GetBySKU(std::string SKU)
+    std::vector<Domain::Batch> BatchMapper::GetBySKU(const std::string& SKU)
     {
         OrderLineMapper ordersMapper(_session);
         std::vector<Domain::Batch> result;
@@ -20,8 +20,8 @@ namespace Allocation::Adapters::Database::Mapper
 
         Poco::Data::Statement select(_session);
         select << R"(SELECT id, reference, sku, purchased_quantity, eta
-                    FROM batches
-                    WHERE id IN (?))",
+                    FROM public.batches
+                    WHERE id IN ($1))",
                 Poco::Data::Keywords::use(id),
                 Poco::Data::Keywords::now;
 
@@ -59,13 +59,15 @@ namespace Allocation::Adapters::Database::Mapper
 
     void BatchMapper::DeleteBatches(std::string SKU)
     {
-        OrderLineMapper ordersMapper(_session);
-        auto id = GetIdBatches(SKU);
-        ordersMapper.RemoveByBatchesId(id);
-        
-        _session << R"(DELETE FROM batches WHERE sku IN (?))",
-                        Poco::Data::Keywords::use(id),
-                        Poco::Data::Keywords::now;
+        if (auto id = GetIdBatches(SKU); !id.empty())
+        {
+            OrderLineMapper ordersMapper(_session);
+            ordersMapper.RemoveByBatchesId(id);
+            
+            _session << R"(DELETE FROM public.batches WHERE sku IN ($1))",
+                            Poco::Data::Keywords::use(id),
+                            Poco::Data::Keywords::now;
+        }
     }
 
     int BatchMapper::GetIdBatch(std::string reference)
@@ -73,7 +75,7 @@ namespace Allocation::Adapters::Database::Mapper
         int batchId = 0;
 
         _session << R"(
-            SELECT id FROM batches WHERE reference = ?
+            SELECT id FROM public.batches WHERE reference = $1
             ORDER BY id DESC LIMIT 1)",
             Poco::Data::Keywords::into(batchId),
             Poco::Data::Keywords::use(reference),
@@ -86,7 +88,7 @@ namespace Allocation::Adapters::Database::Mapper
     {
         std::vector<int> batchesId;
 
-        _session << R"(SELECT id FROM batches WHERE sku = ?)",
+        _session << R"(SELECT id FROM public.batches WHERE sku = $1)",
                         Poco::Data::Keywords::into(batchesId),
                         Poco::Data::Keywords::use(SKU),
                         Poco::Data::Keywords::now;
@@ -113,7 +115,8 @@ namespace Allocation::Adapters::Database::Mapper
             if (auto eta = batch.GetETA(); eta.has_value())
                 pocoEta = Convert(eta.value());
 
-            _session << R"(INSERT INTO batches (reference, sku, purchased_quantity, eta) VALUES (?, ?, ?, ?))",
+            _session << R"(INSERT INTO public.batches (reference, sku, purchased_quantity, eta)
+                            VALUES ($1, $2, $3, $4))",
                 Poco::Data::Keywords::use(reference),
                 Poco::Data::Keywords::use(sku),
                 Poco::Data::Keywords::use(totalQty),

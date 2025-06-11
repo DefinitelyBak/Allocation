@@ -11,7 +11,7 @@ namespace Allocation::Adapters::Database::Mapper
     {
         Poco::Nullable<int> dummy;
         int rowsAffected = 0;
-        _session << "SELECT 1 FROM products WHERE sku = ?",
+        _session << "SELECT 1 FROM public.products WHERE sku = $1",
             Poco::Data::Keywords::into(dummy),
             Poco::Data::Keywords::use(SKU),
             Poco::Data::Keywords::now;
@@ -24,7 +24,7 @@ namespace Allocation::Adapters::Database::Mapper
         std::shared_ptr<Domain::Product> result;
         
         Poco::Nullable<int> version;
-        _session << R"(SELECT version_number FROM products WHERE sku = ?)",
+        _session << R"(SELECT version_number FROM public.products WHERE sku = $1)",
                     Poco::Data::Keywords::into(version),
                     Poco::Data::Keywords::use(SKU),
                     Poco::Data::Keywords::now;
@@ -52,7 +52,7 @@ namespace Allocation::Adapters::Database::Mapper
         std::string sku = product->GetSKU();
         int version = product->GetVersion();
 
-        _session << R"(INSERT INTO products (sku, version_number) VALUES (?, ?))",
+        _session << R"(INSERT INTO public.products (sku, version_number) VALUES ($1, $2))",
             Poco::Data::Keywords::use(sku),
             Poco::Data::Keywords::use(version),
             Poco::Data::Keywords::now;
@@ -62,18 +62,18 @@ namespace Allocation::Adapters::Database::Mapper
 
     bool ProductMapper::UpdateVersion(std::string SKU, size_t oldVersion, size_t newVersion)
     {
-        int rowsAffected = 0;
-        _session << R"(
-            UPDATE products
-            SET version_number = ?
-            WHERE sku = ? AND version_number = ?
-        )",
-        Poco::Data::Keywords::use(newVersion),
-        Poco::Data::Keywords::use(SKU),
-        Poco::Data::Keywords::use(oldVersion),
-        Poco::Data::Keywords::limit(rowsAffected),
-        Poco::Data::Keywords::now;
+        _session << "UPDATE public.products SET version_number = $1 WHERE sku = $2 AND version_number = $3",
+            Poco::Data::Keywords::use(newVersion),
+            Poco::Data::Keywords::use(SKU),
+            Poco::Data::Keywords::use(oldVersion),
+            Poco::Data::Keywords::now;
 
-        return rowsAffected == 1;
+        int actualVersion = 0;
+        _session << "SELECT version_number FROM public.products WHERE sku = $1",
+            Poco::Data::Keywords::use(SKU),
+            Poco::Data::Keywords::into(actualVersion),
+            Poco::Data::Keywords::now;
+
+        return actualVersion == newVersion;
     }
 }

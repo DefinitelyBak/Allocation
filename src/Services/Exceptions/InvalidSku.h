@@ -20,5 +20,4 @@ namespace Allocation::Services::Exceptions
     private:
         std::string msg;
     };
-
 }

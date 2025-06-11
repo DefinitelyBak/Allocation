@@ -3,23 +3,6 @@
 
 namespace Allocation::Tests
 {
-    Poco::URI GetURI(std::string command)
-    {
-        Poco::AutoPtr<Poco::Util::IniFileConfiguration> pConf(
-        new Poco::Util::IniFileConfiguration("./Allocation.ini"));
-        
-        std::string host = pConf->getString("server.host", "127.0.0.1");
-        int port = pConf->getInt("server.port", 9980);
-
-        Poco::URI uri;
-        uri.setScheme("http");
-        uri.setHost(host);
-        uri.setPort(port);
-        uri.setPath(command);
-
-        return uri;
-    }
-
     std::pair<Domain::Batch, Domain::OrderLine> MakeBatchAndLine(
         const std::string& SKU, size_t batchQty, size_t lineQty)
     {
@@ -29,19 +12,19 @@ namespace Allocation::Tests
 
     int InsertBatch(Poco::Data::Session& session, std::string batchRef, std::string sku , int qty, int version)
     {
-        session << R"(INSERT INTO products (sku, version_number) VALUES ($1, $2))",
+        session << "INSERT INTO public.products (sku, version_number) VALUES ($1, $2)",
             Poco::Data::Keywords::use(sku),
             Poco::Data::Keywords::use(version),
             Poco::Data::Keywords::now;
 
-        session << R"(INSERT INTO batches (reference, sku, _purchased_quantity, eta) VALUES ($1, $2, $3, NULL))",
+        session << "INSERT INTO public.batches (reference, sku, purchased_quantity, eta) VALUES ($1, $2, $3, NULL)",
             Poco::Data::Keywords::use(batchRef),
             Poco::Data::Keywords::use(sku),
             Poco::Data::Keywords::use(qty),
             Poco::Data::Keywords::now;
 
         int id = 0;
-        session << R"(SELECT id FROM batches WHERE reference = $1 AND sku = $2)",
+        session << "SELECT id FROM public.batches WHERE reference = $1 AND sku = $2",
             Poco::Data::Keywords::into(id),
             Poco::Data::Keywords::use(batchRef),
             Poco::Data::Keywords::use(sku),
@@ -76,7 +59,7 @@ namespace Allocation::Tests
         std::string batchref;
 
         Poco::Data::Statement selectOrderLine(session);
-        selectOrderLine << "SELECT id FROM order_lines WHERE orderid = $1 AND sku = $2",
+        selectOrderLine << "SELECT id FROM public.order_lines WHERE orderid = $1 AND sku = $2",
                         Poco::Data::Keywords::use(orderid),
                         Poco::Data::Keywords::use(sku),
                         Poco::Data::Keywords::into(orderlineId),
@@ -88,8 +71,8 @@ namespace Allocation::Tests
          Poco::Data::Statement selectBatchRef(session);
         selectBatchRef << R"(
             SELECT b.reference 
-            FROM allocations 
-            JOIN batches AS b ON batch_id = b.id 
+            FROM public.allocations 
+            JOIN public.batches AS b ON batch_id = b.id 
             WHERE orderline_id = $1
         )",
         Poco::Data::Keywords::use(orderlineId),
