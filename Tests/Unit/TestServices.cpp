@@ -61,4 +61,20 @@ namespace Allocation::Tests
 
         EXPECT_TRUE(uow.IsCommited());
     }
+
+    
+    TEST(Services, test_sends_email_on_out_of_stock_error)
+    {
+        /*
+        Services::UoW::FakeUnitOfWork uow;
+        services::AddBatch(uow, "b1", "POPULAR-CURTAINS", 9);
+
+        with mock.patch("allocation.adapters.email.send_mail") as mock_send_mail:
+            services.allocate("o1", "POPULAR-CURTAINS", 10, uow)
+            assert mock_send_mail.call_args == mock.call(
+                "stock@made.com",
+                f"Out of stock for POPULAR-CURTAINS",
+            )
+        */
+    }
 }

@@ -75,6 +75,7 @@ set(test_sources
   src/Services/Services.cpp
   src/Services/UoW/AbstractUnitOfWork.cpp
   src/Services/UoW/SqlUnitOfWork.cpp
+  src/Services/MessageBus/MessageBus.cpp
   Tests/Utilities/CommonFunctions.cpp
   Tests/Utilities/UoWFixture.cpp
   Tests/Unit/TestProduct.cpp
