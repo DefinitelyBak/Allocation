@@ -1,6 +1,5 @@
 #include "Product.h"
 
-#include "Exceptions/OutOfStock.h"
 #include "Events/OutOfStock.h"
 
 

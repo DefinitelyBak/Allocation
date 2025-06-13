@@ -3,7 +3,6 @@
 #include "Precompile.h"
 #include "CommonFunctions.h"
 #include "Utilities/Common.h"
-#include "Domain/Exceptions/OutOfStock.h"
 #include "Domain/Product/Product.h"
 #include "Domain/Events/OutOfStock.h"
 

@@ -1,5 +1,5 @@
 #include "AbstractUnitOfWork.h"
-#include "MessageBus/MessageBus.h"
+#include "EventBus/EventBus.h"
 
 
 namespace Allocation::Services::UoW
@@ -21,7 +21,7 @@ namespace Allocation::Services::UoW
 
     void AbstractUnitOfWork::PublishEvents(const std::vector<std::shared_ptr<Domain::Product>>& products)
     {
-        auto& messagebus = Allocation::Services::MessageBus::Instance();
+        auto& messagebus = Allocation::Services::EventBus::Instance();
 
         for(const auto& product : products)
             for (auto& event : product->Events())

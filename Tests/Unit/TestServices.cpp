@@ -4,7 +4,7 @@
 #include "Adapters/Repository/FakeRepository.h"
 #include "Services.h"
 #include "Services/UoW/FakeUnitOfWork.h"
-#include "Services/MessageBus/MessageBus.h"
+#include "Services/EventBus/EventBus.h"
 #include "Services/Exceptions/InvalidSku.h"
 #include "Domain/Events/OutOfStock.h"
 
@@ -71,7 +71,7 @@ namespace Allocation::Tests
             EXPECT_EQ(event->SKU, "POPULAR-CURTAINS");
         };
 
-        Services::MessageBus::Instance().Subscribe<Domain::Events::OutOfStock>(handler);
+        Services::EventBus::Instance().Subscribe<Domain::Events::OutOfStock>(handler);
 
         Services::UoW::FakeUnitOfWork uow;
         Services::AddBatch(uow, "b1", "POPULAR-CURTAINS", 9);

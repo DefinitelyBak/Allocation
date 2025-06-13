@@ -30,8 +30,8 @@ set(allocation_sources
   src/Services/Services.cpp
   src/Services/UoW/AbstractUnitOfWork.cpp
   src/Services/UoW/SqlUnitOfWork.cpp
-  src/Services/MessageBus/MessageBus.cpp
-  src/Services/MessageBus/Handlers.cpp
+  src/Services/EventBus/EventBus.cpp
+  src/Services/EventBus/Handlers.cpp
   src/Infrastructure/Server/Server.cpp
   src/Infrastructure/Server/HandlerFactory.cpp
   src/Infrastructure/Server/Handlers/AllocateHandler.cpp
@@ -79,8 +79,8 @@ set(test_sources
   src/Services/Services.cpp
   src/Services/UoW/AbstractUnitOfWork.cpp
   src/Services/UoW/SqlUnitOfWork.cpp
-  src/Services/MessageBus/MessageBus.cpp
-  src/Services/MessageBus/Handlers.cpp
+  src/Services/EventBus/EventBus.cpp
+  src/Services/EventBus/Handlers.cpp
   Tests/Utilities/CommonFunctions.cpp
   Tests/Utilities/UoWFixture.cpp
   Tests/Unit/TestProduct.cpp

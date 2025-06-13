@@ -7,10 +7,10 @@
 namespace Allocation::Services
 {
 
-    class MessageBus
+    class EventBus
     {
     public:
-        static MessageBus& Instance();
+        static EventBus& Instance();
 
         template<typename T>
         void Subscribe(std::function<void(std::shared_ptr<T>)> handler)
@@ -25,7 +25,7 @@ namespace Allocation::Services
         void Publish(const Domain::Events::IEventPtr& event);
 
     private:
-        MessageBus();
+        EventBus();
 
         std::unordered_map<std::type_index, std::vector<std::function<void(Domain::Events::IEventPtr)>>> _subscribers;
     };
