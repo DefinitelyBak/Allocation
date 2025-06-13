@@ -4,7 +4,9 @@
 #include "Adapters/Repository/FakeRepository.h"
 #include "Services.h"
 #include "Services/UoW/FakeUnitOfWork.h"
+#include "Services/MessageBus/MessageBus.h"
 #include "Services/Exceptions/InvalidSku.h"
+#include "Domain/Events/OutOfStock.h"
 
 
 namespace Allocation::Tests
@@ -62,19 +64,18 @@ namespace Allocation::Tests
         EXPECT_TRUE(uow.IsCommited());
     }
 
-    
     TEST(Services, test_sends_email_on_out_of_stock_error)
     {
-        /*
-        Services::UoW::FakeUnitOfWork uow;
-        services::AddBatch(uow, "b1", "POPULAR-CURTAINS", 9);
+        auto handler = [](std::shared_ptr<Domain::Events::OutOfStock> event)
+        {
+            EXPECT_EQ(event->SKU, "POPULAR-CURTAINS");
+        };
 
-        with mock.patch("allocation.adapters.email.send_mail") as mock_send_mail:
-            services.allocate("o1", "POPULAR-CURTAINS", 10, uow)
-            assert mock_send_mail.call_args == mock.call(
-                "stock@made.com",
-                f"Out of stock for POPULAR-CURTAINS",
-            )
-        */
+        Services::MessageBus::Instance().Subscribe<Domain::Events::OutOfStock>(handler);
+
+        Services::UoW::FakeUnitOfWork uow;
+        Services::AddBatch(uow, "b1", "POPULAR-CURTAINS", 9);
+
+        Services::Allocate(uow, "o1", "POPULAR-CURTAINS", 10);
     }
 }

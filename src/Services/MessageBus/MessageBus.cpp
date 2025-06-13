@@ -1,15 +1,22 @@
 #include "MessageBus.h"
+#include "Domain/Events/OutOfStock.h"
+#include "Handlers.h"
 
 
 namespace Allocation::Services
 {
-    EventBus& EventBus::Instance()
+    MessageBus::MessageBus()
     {
-        static EventBus eventbus;
+        Subscribe<Allocation::Domain::Events::OutOfStock>(Handlers::SendOutOfStockNotification);
+    }
+
+    MessageBus& MessageBus::Instance()
+    {
+        static MessageBus eventbus;
         return eventbus;
     }
 
-    void EventBus::Publish(const Domain::Events::IEventPtr& event)
+    void MessageBus::Publish(const Domain::Events::IEventPtr& event)
     {
         auto it = _subscribers.find(std::type_index(typeid(*event)));
         if (it != _subscribers.end())
