@@ -28,8 +28,7 @@ namespace Allocation::Infrastructure::Server::Handlers
         try
         {
             auto event = std::make_shared<Domain::Events::BatchCreated>(ref, sku, qty);
-            Services::UoW::SqlUnitOfWork uow;
-            Services::MessageBus::Instance().Handle(uow, event);
+            Services::MessageBus::Instance().Handle(Allocation::Services::UoW::SqlUowFactory, event);
 
             response.setStatus(Poco::Net::HTTPResponse::HTTP_CREATED);
             response.setContentType("application/json");

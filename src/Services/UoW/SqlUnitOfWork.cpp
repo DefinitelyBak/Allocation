@@ -71,4 +71,9 @@ namespace Allocation::Services::UoW
 
         return result;
     }
+
+    std::shared_ptr<Domain::IUnitOfWork> SqlUowFactory()
+    {
+        return std::make_shared<SqlUnitOfWork>();
+    }
 }

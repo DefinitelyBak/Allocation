@@ -80,11 +80,12 @@ set(test_sources
   src/Services/MessageBus/MessageBus.cpp
   src/Services/MessageBus/Handlers.cpp
   Tests/Utilities/CommonFunctions.cpp
-  Tests/Utilities/UoWFixture.cpp
+  Tests/Utilities/SqlFixture.cpp
   Tests/Unit/TestProduct.cpp
   Tests/Unit/TestBatches.cpp
   Tests/Unit/TestHandlers.cpp
   Tests/Integration/TestUnitOfWork.cpp
+  Tests/Integration/TestRepository.cpp
   Tests/E2E/TestAPI.cpp
 )
 

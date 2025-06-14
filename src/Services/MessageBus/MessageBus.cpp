@@ -10,6 +10,7 @@ namespace Allocation::Services
         Subscribe<Allocation::Domain::Events::OutOfStock>(Handlers::SendOutOfStockNotification);
         Subscribe<Allocation::Domain::Events::AllocationRequired>(Handlers::Allocate);
         Subscribe<Allocation::Domain::Events::BatchCreated>(Handlers::AddBatch);
+        Subscribe<Allocation::Domain::Events::BatchQuantityChanged>(Handlers::ChangeBatchQuantity);
     }
 
     MessageBus& MessageBus::Instance()
@@ -18,7 +19,7 @@ namespace Allocation::Services
         return eventbus;
     }
 
-    std::vector<std::string> MessageBus::Handle(Domain::IUnitOfWork& uow, const Domain::Events::IEventPtr& event)
+    std::vector<std::string> MessageBus::Handle(std::function<std::shared_ptr<Domain::IUnitOfWork>()> uowFactory, const Domain::Events::IEventPtr& event)
     {
         std::vector<std::string> result;
         std::queue<Domain::Events::IEventPtr> events;
@@ -26,17 +27,18 @@ namespace Allocation::Services
 
         while (!events.empty())
         {
-            auto current_event = events.front();
+            auto currentEvent = events.front();
             events.pop();
 
-            for (auto& handler : _subscribers[std::type_index(typeid(*current_event))])
+            for (auto& handler : _subscribers[std::type_index(typeid(*currentEvent))])
             {
-                auto res = handler(uow, current_event);
+                auto uow = uowFactory();
+                auto res = handler(uow, currentEvent);
                 if (res.has_value())
                     result.push_back(res.value());
 
-                for (auto& new_event : uow.GetNewEvents())
-                    events.push(new_event);
+                for (auto& newEvent : uow->GetNewEvents())
+                    events.push(newEvent);
             }
         }
 

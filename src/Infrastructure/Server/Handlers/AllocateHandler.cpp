@@ -24,8 +24,7 @@ namespace Allocation::Infrastructure::Server::Handlers
         try
         {
             auto event = std::make_shared<Domain::Events::AllocationRequired>(orderid, sku, qty);
-            Services::UoW::SqlUnitOfWork uow;
-            auto result = Services::MessageBus::Instance().Handle(uow, event);
+            auto result = Services::MessageBus::Instance().Handle(Allocation::Services::UoW::SqlUowFactory, event);
             std::string batchRef = result.back();
 
             response.setStatus(Poco::Net::HTTPResponse::HTTP_CREATED);
