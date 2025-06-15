@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ICommand.h"
+#include "AbstractCommand.h"
 
 
-namespace Allocation::Domain::Events
+namespace Allocation::Domain::Commands
 {
 
-    struct ChangeBatchQuantity final : public ICommand
+    struct ChangeBatchQuantity final : public AbstractCommand
     {
         ChangeBatchQuantity(std::string ref, size_t qty) : ref(std::move(ref)), qty(qty) 
         {}

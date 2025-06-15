@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ICommand.h"
+#include "AbstractCommand.h"
 
 
-namespace Allocation::Domain::Events
+namespace Allocation::Domain::Commands
 {
 
-    struct Allocate final : public ICommand
+    struct Allocate final : public AbstractCommand
     {
         Allocate(std::string orderid, std::string sku, size_t qty) :
             orderid(std::move(orderid)), sku(std::move(sku)), qty(qty) 
