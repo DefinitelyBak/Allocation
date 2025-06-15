@@ -1,17 +1,17 @@
 #pragma once
 
-#include "IEvent.h"
+#include "ICommand.h"
 
 
 namespace Allocation::Domain::Events
 {
 
-    struct AllocationRequired final : public IEvent
+    struct Allocate final : public ICommand
     {
-        AllocationRequired(std::string orderid, std::string sku, size_t qty) :
+        Allocate(std::string orderid, std::string sku, size_t qty) :
             orderid(std::move(orderid)), sku(std::move(sku)), qty(qty) 
         {}
-        std::string Name() const override { return "AllocationRequired"; };
+        std::string Name() const override { return "Allocate"; };
 
         std::string orderid;
         std::string sku;

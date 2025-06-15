@@ -19,7 +19,7 @@ namespace Allocation::Services
         return eventbus;
     }
 
-    std::vector<std::string> MessageBus::Handle(std::function<std::shared_ptr<Domain::IUnitOfWork>()> uowFactory, const Domain::Events::IEventPtr& event)
+    std::vector<std::string> MessageBus::Handle(UoWFactory uowFactory, const CommandPtr& command)
     {
         std::vector<std::string> result;
         std::queue<Domain::Events::IEventPtr> events;
@@ -43,5 +43,15 @@ namespace Allocation::Services
         }
 
         return result;
+    }
+
+    void MessageBus::HandleEvent(UoWPtr uow, EventPtr event, std::queue<CommandPtr>& queue)
+    {
+
+    }
+
+    std::optional<std::string> MessageBus::HandleCommand(UoWPtr uow, CommandPtr command, std::queue<CommandPtr>& queue)
+    {
+        
     }
 }
