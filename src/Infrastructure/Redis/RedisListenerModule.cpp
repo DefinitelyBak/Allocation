@@ -3,6 +3,7 @@
 #include "Domain/Commands/ChangeBatchQuantity.h"
 #include "Services/UoW/SqlUnitOfWork.h"
 #include "RedisConfig.h"
+#include "Services/Loggers/ILogger.h"
 
 
 namespace Allocation::Infrastructure::Redis
@@ -13,13 +14,13 @@ namespace Allocation::Infrastructure::Redis
 
     void RedisListenerModule::initialize(Poco::Util::Application& app)
     {
-        subscribe();
-
         _reader = std::make_unique<Poco::Redis::AsyncReader>(_client);
         _reader->redisResponse += Poco::delegate(this, &RedisListenerModule::onRedisMessage);
         _reader->start();
 
-        Poco::Util::Application::instance().logger().information("Redis async listener started");
+        subscribe();
+
+        Services::Loggers::GetLogger()->Information("Redis async listener started");
     }
 
     void RedisListenerModule::uninitialize()
@@ -31,7 +32,7 @@ namespace Allocation::Infrastructure::Redis
             _reader.reset();
         }
 
-        Poco::Util::Application::instance().logger().information("Redis async listener stopped");
+        Services::Loggers::GetLogger()->Information("Redis async listener stopped");
     }
 
     void RedisListenerModule::subscribe()
@@ -45,7 +46,7 @@ namespace Allocation::Infrastructure::Redis
     {
         if (const Poco::Exception* exception = args.exception(); exception)
         {
-            Poco::Util::Application::instance().logger().error("Redis exception: " + exception->displayText());
+            Services::Loggers::GetLogger()->Error("Redis exception: " + exception->displayText());
         }
         else if (auto message = args.message(); message)
         {
@@ -57,7 +58,7 @@ namespace Allocation::Infrastructure::Redis
 
                 if (!json->has("batchref") || !json->has("qty"))
                 {
-                    Poco::Util::Application::instance().logger().error("JSON missing required fields");
+                    Services::Loggers::GetLogger()->Error("JSON missing required fields");
                     return;
                 }
 
@@ -69,15 +70,15 @@ namespace Allocation::Infrastructure::Redis
             }
             catch (const Poco::Exception& ex)
             {
-                Poco::Util::Application::instance().logger().error("Failed to parse Redis message JSON: " + ex.displayText());
+                Services::Loggers::GetLogger()->Error("Failed to parse Redis message JSON: " + ex.displayText());
             }
             catch (const std::exception& ex)
             {
-                Poco::Util::Application::instance().logger().error(std::string("Standard exception: ") + ex.what());
+                Services::Loggers::GetLogger()->Error(std::string("Standard exception: ") + ex.what());
             }
             catch (...)
             {
-                Poco::Util::Application::instance().logger().error("Unknown exception while processing Redis message");
+                Services::Loggers::GetLogger()->Error("Unknown exception while processing Redis message");
             }
         }
     }

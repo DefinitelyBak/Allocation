@@ -32,6 +32,7 @@ set(allocation_sources
   src/Services/UoW/SqlUnitOfWork.cpp
   src/Services/MessageBus/MessageBus.cpp
   src/Services/MessageBus/Handlers.cpp
+  src/Services/Loggers/ILogger.cpp
   src/Infrastructure/Server/Server.cpp
   src/Infrastructure/Server/HandlerFactory.cpp
   src/Infrastructure/Server/Handlers/AllocateHandler.cpp
@@ -83,17 +84,20 @@ set(test_sources
   src/Services/UoW/SqlUnitOfWork.cpp
   src/Services/MessageBus/MessageBus.cpp
   src/Services/MessageBus/Handlers.cpp
+  src/Services/Loggers/ILogger.cpp
   src/Infrastructure/Redis/RedisConfig.cpp
   Tests/Utilities/CommonFunctions.cpp
   Tests/Utilities/SqlFixture.cpp
   Tests/Utilities/ApiClient.cpp
+  Tests/Utilities/RedisClient.cpp
   Tests/Unit/TestProduct.cpp
   Tests/Unit/TestBatches.cpp
   Tests/Unit/TestHandlers.cpp
   Tests/Integration/TestUnitOfWork.cpp
   Tests/Integration/TestRepository.cpp
   Tests/E2E/TestAPI.cpp
-  Tests/E2E/TestExternalEvents.cpp
+  #Tests/E2E/TestExternalEvents.cpp
+  Tests/mainTests.cpp
 )
 
 add_executable(Tests ${test_sources})

@@ -5,38 +5,27 @@
 
 namespace Allocation::Tests
 {
-    class RedisClient {
+    class RedisClient
+    {
     public:
-        RedisClient(const std::string& host, int port, std::string chanel) 
-            : _client(host, port) 
-        {
-            Poco::Redis::Command subscribe("SUBSCRIBE");
-            subscribe << chanel;
-            _client.execute<void>(subscribe);
-        }
+        RedisClient(const std::string& host, int port, const std::string& channel);
 
-        bool readNextMessage(std::string& outMessage, int timeoutMs = 1000)
-        {
-            Poco::Redis::Array reply;
-            
-            _client.setReceiveTimeout(timeoutMs);
-            _client.readReply(reply);
-            if (!reply.isNull())
-            {
-                if (reply.size() >= 3)
-                {
-                    std::string type = reply.get<Poco::Redis::BulkString>(0).value();
-                    std::string channel = reply.get<Poco::Redis::BulkString>(1).value();
-                    outMessage = reply.get<Poco::Redis::BulkString>(2).value();
-                    
-                    if (type == "message")
-                        return true;
-                }
-            }
-            return false;
-        }
+        ~RedisClient();
+
+        void Stop();
+        std::optional<std::string> GetMessage() const;
+        bool WaitForMessage(int timeoutMs);
 
     private:
+        void Listen();
+
+        mutable std::mutex _mutex;
+        std::condition_variable _cv;
+        std::optional<std::string> _message;
+
+        std::atomic_bool _running;
         Poco::Redis::Client _client;
+        std::string _channel;
+        std::thread _thread;
     };
 }

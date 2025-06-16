@@ -1,4 +1,5 @@
 #include "RedisEventPublisher.h"
+#include "Services/Loggers/ILogger.h"
 
 
 namespace Allocation::Adapters::Redis
@@ -8,7 +9,7 @@ namespace Allocation::Adapters::Redis
 
     void RedisEventPublisher::Publish(const std::string& channel, std::shared_ptr<Domain::Events::Allocated> event)
     {
-        //Poco::Util::Application::instance().logger().debug("publishing: channel=%s, event=%s", channel, event->Name());
+        Services::Loggers::GetLogger()->Debug(std::format("publishing: channel={}, event={}", channel, event->Name()));
 
         Poco::JSON::Object json;
         json.set("sku", event->SKU);
@@ -22,6 +23,15 @@ namespace Allocation::Adapters::Redis
         publish.add(channel);
         publish.add(ss.str());
 
-        _client.sendCommand(publish);
+        try
+        {
+            _client.execute<void>(publish);
+        }
+        catch (const Poco::Exception& e)
+        {
+            Services::Loggers::GetLogger()->Error(std::format(
+                "Redis publish failed: {}", e.displayText()
+            ));
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 #include "Precompile.h"
 #include "CommonFunctions.h"
+#include "Infrastructure/Redis/RedisConfig.h"
 #include "Utilities/Common.h"
 #include "RedisClient.h"
 #include "ApiClient.h"
@@ -11,18 +12,7 @@ namespace Allocation::Tests
 {
     TEST(ExternalEvents, ChangeBatchQuantityLeadsToReallocation)
     {
-        Poco::Path exePath(Poco::Path::current());
-        exePath.append("Allocation.ini");
-
-        if (!Poco::File(exePath).exists())
-        {
-            FAIL() << "INI file 'Allocation.ini' not found in " << exePath.toString();
-        }
-
-        Poco::AutoPtr<Poco::Util::IniFileConfiguration> pConf(
-            new Poco::Util::IniFileConfiguration(exePath.toString()));
-        std::string host = pConf->getString("redis.host", "127.0.0.1");
-        int port = pConf->getInt("redis.port", 6379);
+        auto conf = Infrastructure::Redis::RedisConfig::FromConfig();
 
         std::string orderid = RandomOrderId();
         std::string sku = RandomSku();
@@ -38,9 +28,9 @@ namespace Allocation::Tests
         auto response = ApiClient::PostToAllocate(orderid, sku, 10);
         EXPECT_EQ(response, earlierBatch);
 
-        RedisClient subscription(host, port, "line_allocated");
+        RedisClient subscriber(conf->host, conf->port, "line_allocated");
 
-        Poco::Redis::Client redis(host, port);
+        Poco::Redis::Client redis(conf->host, conf->port);
         {
             Poco::JSON::Object obj;
             obj.set("batchref", earlierBatch);
@@ -56,24 +46,17 @@ namespace Allocation::Tests
             redis.execute<void>(publish);
         }
 
-        std::string message;
-        bool gotMessage = false;
-        for (int i = 0; i < 30; ++i)
-        {
-            if (subscription.readNextMessage(message, 100))
-            {
-                gotMessage = true;
-                break;
-            }
-        }
+        bool got = subscriber.WaitForMessage(3000);
+        EXPECT_TRUE(got) << "Redis event was not received in time";
 
-        ASSERT_TRUE(gotMessage) << "Did not receive reallocation message";
+        auto msgOpt = subscriber.GetMessage();
+        EXPECT_TRUE(msgOpt.has_value());
 
         Poco::JSON::Parser parser;
-        auto result = parser.parse(message);
+        auto result = parser.parse(msgOpt.value());
         auto obj = result.extract<Poco::JSON::Object::Ptr>();
 
-        ASSERT_EQ(obj->getValue<std::string>("orderid"), orderid);
-        ASSERT_EQ(obj->getValue<std::string>("batchref"), laterBatch);
+        EXPECT_EQ(obj->getValue<std::string>("orderid"), orderid);
+        EXPECT_EQ(obj->getValue<std::string>("batchref"), laterBatch);
     }
 }
