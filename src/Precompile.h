@@ -60,3 +60,4 @@
 #include <Poco/Redis/AsyncReader.h>
 #include <Poco/Redis/Command.h>
 #include <Poco/Redis/Redis.h>
+#include <Poco/Redis/Type.h>

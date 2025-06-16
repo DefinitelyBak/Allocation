@@ -13,6 +13,7 @@ namespace Allocation::Domain::Events
         {};
 
         [[nodiscard]] std::string Name() const override { return "Allocated"; };
+
         std::string SKU;
         size_t qty;
         std::string batchref;

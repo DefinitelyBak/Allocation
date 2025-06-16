@@ -1,43 +1,42 @@
 #pragma once
 
-#include <Poco/Redis/Client.h>
-#include <Poco/Redis/SubscribeMessage.h>
-#include <thread>
+#include "Precompile.h"
 
 
-class RedisClient
+namespace Allocation::Tests
 {
-public:
-    using MessageHandler = std::function<void(const std::string& channel, const std::string& message)>;
-
-    RedisClient(const std::string& host, int port);
-    ~RedisClient();
-
-    void Subscribe(const std::string& channel, MessageHandler handler);
-    void Publish(const std::string& channel, const Poco::JSON::Object::Ptr& message);
-
-private:
-    Poco::Redis::Client _client;
-    std::unique_ptr<Poco::Redis::AsyncReader> _reader;
-    std::mutex _mutex;
-};
-
-
-void SubscribeAndListen(Poco::Redis::Client& client, const std::string& channel)
-{
-    client.subscribe(channel);
-    while (true)
-    {
-        Poco::Redis::RedisType::Ptr msg = client.readReply();
-        auto* subMsg = dynamic_cast<Poco::Redis::SubscribeMessage*>(msg.get());
-        if (subMsg && subMsg->channel() == channel)
+    class RedisClient {
+    public:
+        RedisClient(const std::string& host, int port, std::string chanel) 
+            : _client(host, port) 
         {
-            std::string jsonStr = subMsg->message();
-            Poco::JSON::Parser parser;
-            auto obj = parser.parse(jsonStr).extract<Poco::JSON::Object::Ptr>();
-            std::cout << "orderid: " << obj->getValue<std::string>("orderid")
-                      << ", batchref: " << obj->getValue<std::string>("batchref") << std::endl;
-            break;
+            Poco::Redis::Command subscribe("SUBSCRIBE");
+            subscribe << chanel;
+            _client.execute<void>(subscribe);
         }
-    }
+
+        bool readNextMessage(std::string& outMessage, int timeoutMs = 1000)
+        {
+            Poco::Redis::Array reply;
+            
+            _client.setReceiveTimeout(timeoutMs);
+            _client.readReply(reply);
+            if (!reply.isNull())
+            {
+                if (reply.size() >= 3)
+                {
+                    std::string type = reply.get<Poco::Redis::BulkString>(0).value();
+                    std::string channel = reply.get<Poco::Redis::BulkString>(1).value();
+                    outMessage = reply.get<Poco::Redis::BulkString>(2).value();
+                    
+                    if (type == "message")
+                        return true;
+                }
+            }
+            return false;
+        }
+
+    private:
+        Poco::Redis::Client _client;
+    };
 }

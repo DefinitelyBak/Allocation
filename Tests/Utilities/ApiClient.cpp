@@ -4,7 +4,7 @@
 
 
 
-namespace Allocation::Tests
+namespace Allocation::Tests::ApiClient
 {
     Poco::URI GetURI(const std::string& command)
     {

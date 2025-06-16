@@ -2,11 +2,13 @@
 #include "MessageBus/MessageBus.h"
 #include "Domain/Commands/ChangeBatchQuantity.h"
 #include "Services/UoW/SqlUnitOfWork.h"
+#include "RedisConfig.h"
 
 
 namespace Allocation::Infrastructure::Redis
 {
-    RedisListenerModule::RedisListenerModule(const std::string& host, int port) : _client(host, port)
+    RedisListenerModule::RedisListenerModule() : 
+        _client(RedisConfig::FromConfig()->host, RedisConfig::FromConfig()->port) 
     {}
 
     void RedisListenerModule::initialize(Poco::Util::Application& app)

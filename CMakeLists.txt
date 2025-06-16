@@ -26,6 +26,7 @@ set(allocation_sources
   src/Adapters/Database/Mappers/OrderLineMapper.cpp
   src/Adapters/Database/Mappers/BatchMapper.cpp
   src/Adapters/Database/Mappers/ProductMapper.cpp
+  src/Adapters/Redis/RedisEventPublisher.cpp
   src/Adapters/Email/Email.cpp
   src/Services/UoW/AbstractUnitOfWork.cpp
   src/Services/UoW/SqlUnitOfWork.cpp
@@ -37,6 +38,7 @@ set(allocation_sources
   src/Infrastructure/Server/Handlers/NotFoundHandler.cpp
   src/Infrastructure/Server/Handlers/AddBatchHandler.cpp
   src/Infrastructure/Redis/RedisListenerModule.cpp
+  src/Infrastructure/Redis/RedisConfig.cpp
 )
 
 set(project_includes
@@ -75,11 +77,13 @@ set(test_sources
   src/Adapters/Database/Mappers/OrderLineMapper.cpp
   src/Adapters/Database/Mappers/BatchMapper.cpp
   src/Adapters/Database/Mappers/ProductMapper.cpp
+  src/Adapters/Redis/RedisEventPublisher.cpp
   src/Adapters/Email/Email.cpp
   src/Services/UoW/AbstractUnitOfWork.cpp
   src/Services/UoW/SqlUnitOfWork.cpp
   src/Services/MessageBus/MessageBus.cpp
   src/Services/MessageBus/Handlers.cpp
+  src/Infrastructure/Redis/RedisConfig.cpp
   Tests/Utilities/CommonFunctions.cpp
   Tests/Utilities/SqlFixture.cpp
   Tests/Utilities/ApiClient.cpp

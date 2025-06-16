@@ -1,7 +1,9 @@
 #include "Handlers.h"
 #include "Adapters/Email/Email.h"
+#include "Adapters/Redis/RedisEventPublisher.h"
 #include "Domain/Product/Product.h"
 #include "Exceptions/InvalidSku.h"
+#include "Infrastructure/Redis/RedisConfig.h"
 
 
 namespace Allocation::Services::Handlers
@@ -13,7 +15,9 @@ namespace Allocation::Services::Handlers
 
     void PublishAllocatedEvent(std::shared_ptr<Domain::IUnitOfWork> uow, std::shared_ptr<Domain::Events::Allocated> event)
     {
-        
+        auto config = Infrastructure::Redis::RedisConfig::FromConfig();
+        Adapters::Redis::RedisEventPublisher publisher(config->host, config->port);
+        publisher.Publish("line_allocated", event);
     }
 
     std::optional<std::string> AddBatch(std::shared_ptr<Domain::IUnitOfWork> uow, std::shared_ptr<Domain::Commands::CreateBatch> message)

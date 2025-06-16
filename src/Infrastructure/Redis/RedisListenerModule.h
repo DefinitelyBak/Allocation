@@ -9,8 +9,8 @@ namespace Allocation::Infrastructure::Redis
     class RedisListenerModule : public Poco::Util::Subsystem
     {
     public:
-        RedisListenerModule(const std::string& host, int port);
-        
+        RedisListenerModule();
+
         void initialize(Poco::Util::Application& app) override;
         void uninitialize() override;
         const char* name() const override { return "RedisListenerModule"; }
