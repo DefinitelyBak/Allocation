@@ -17,6 +17,7 @@ namespace Allocation::Infrastructure::Server
         void handleHelp(const std::string& name, const std::string& value);
         void setupAndRunServer();
         void initDatabase();
+        void initRedis();
 
         bool _helpRequested {false};
     };

@@ -9,6 +9,7 @@ namespace Allocation::Services
     MessageBus::MessageBus() : _logger(std::make_shared<Loggers::PocoLogger>())
     {
         SubscribeToEvent<Allocation::Domain::Events::OutOfStock>(Handlers::SendOutOfStockNotification);
+        SubscribeToEvent<Allocation::Domain::Events::Allocated>(Handlers::PublishAllocatedEvent);
 
         SetCommandHandler<Allocation::Domain::Commands::Allocate>(Handlers::Allocate);
         SetCommandHandler<Allocation::Domain::Commands::CreateBatch>(Handlers::AddBatch);

@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Poco REQUIRED)
 find_package(GTest REQUIRED)
 
-set(CONFIG_FILE ${CMAKE_SOURCE_DIR}/src/Infrastructure/Server/Config/Allocation.ini)
+set(CONFIG_FILE ${CMAKE_SOURCE_DIR}/src/Infrastructure/Config/Allocation.ini)
 
 set(allocation_sources
   src/main.cpp
@@ -36,6 +36,7 @@ set(allocation_sources
   src/Infrastructure/Server/Handlers/AllocateHandler.cpp
   src/Infrastructure/Server/Handlers/NotFoundHandler.cpp
   src/Infrastructure/Server/Handlers/AddBatchHandler.cpp
+  src/Infrastructure/Redis/RedisListenerModule.cpp
 )
 
 set(project_includes
@@ -81,12 +82,14 @@ set(test_sources
   src/Services/MessageBus/Handlers.cpp
   Tests/Utilities/CommonFunctions.cpp
   Tests/Utilities/SqlFixture.cpp
+  Tests/Utilities/ApiClient.cpp
   Tests/Unit/TestProduct.cpp
   Tests/Unit/TestBatches.cpp
   Tests/Unit/TestHandlers.cpp
   Tests/Integration/TestUnitOfWork.cpp
   Tests/Integration/TestRepository.cpp
   Tests/E2E/TestAPI.cpp
+  Tests/E2E/TestExternalEvents.cpp
 )
 
 add_executable(Tests ${test_sources})

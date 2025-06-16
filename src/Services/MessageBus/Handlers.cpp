@@ -11,6 +11,11 @@ namespace Allocation::Services::Handlers
         Adapters::Email::SendMail("stock@made.com", std::format("Out of stock for {}", event->SKU));
     }
 
+    void PublishAllocatedEvent(std::shared_ptr<Domain::IUnitOfWork> uow, std::shared_ptr<Domain::Events::Allocated> event)
+    {
+        
+    }
+
     std::optional<std::string> AddBatch(std::shared_ptr<Domain::IUnitOfWork> uow, std::shared_ptr<Domain::Commands::CreateBatch> message)
     {
         auto& repo = uow->GetProductRepository();

@@ -3,6 +3,7 @@
 #include "HandlerFactory.h"
 #include "Adapters/Database/Session/SessionPool.h"
 #include "Adapters/Database/DbTables.h"
+#include "Infrastructure/Redis/RedisListenerModule.h"
 
 
 namespace Allocation::Infrastructure::Server
@@ -12,6 +13,7 @@ namespace Allocation::Infrastructure::Server
         loadConfiguration();
         initDatabase();
         ServerApplication::initialize(self);
+        initRedis();
     }
 
     void ServerApp::defineOptions(Poco::Util::OptionSet& options)
@@ -90,5 +92,15 @@ namespace Allocation::Infrastructure::Server
 
         Adapters::Database::SessionPool::Instance().Configure(config);
         Poco::Data::PostgreSQL::Connector::registerConnector();
+    }
+
+    void ServerApp::initRedis()
+    {
+        const auto& cfg = config();
+
+        std::string host = cfg.getString("redis.host", "localhost");
+        int port = cfg.getInt("redis.port", 7777);
+
+        addSubsystem(new Redis::RedisListenerModule(host, port));
     }
 }
